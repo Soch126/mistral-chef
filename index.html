@@ -1,0 +1,118 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="Mistral Chef - Transformez vos ingrédients en recettes uniques grâce à l'intelligence artificielle Mistral AI.">
+  <title>Mistral Chef — L'IA qui cuisine pour vous</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,700;0,900;1,400&family=DM+Sans:opsz,wght@9..40,400;9..40,500;9..40,700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="css/styles.css">
+</head>
+<body>
+  <div class="grain"></div>
+
+  <main>
+    <section class="hero">
+      <div class="container">
+        <div class="hero-content">
+          <div class="badge">✨ Propulsé par Mistral AI</div>
+          <h1>Mistral<br><span>Chef</span></h1>
+          <p class="subtitle">Donnez-nous des ingrédients, recevez une recette digne d'un grand chef. <span class="accent">Gratuit, instantané, surprenant.</span></p>
+        </div>
+
+        <form class="chef-form" id="recipe-form">
+          <div class="input-group">
+            <label for="ingredients">Tes ingrédients</label>
+            <div class="input-wrapper">
+              <span class="input-icon">🥘</span>
+              <input
+                type="text"
+                id="ingredients"
+                name="ingredients"
+                placeholder="ex: poulet, citron, riz, oignons, épices..."
+                autocomplete="off"
+                required
+              >
+            </div>
+            <p class="hint">Sépare les ingrédients par des virgules. Laisse-toi surprendre.</p>
+          </div>
+
+          <div class="input-group">
+            <label for="vibe">L'ambiance</label>
+            <div class="vibe-selector" id="vibe-selector">
+              <button type="button" class="vibe-btn" data-vibe="classique">
+                <span class="vibe-icon">🍽️</span>
+                <span class="vibe-label">Classique</span>
+              </button>
+              <button type="button" class="vibe-btn" data-vibe="healthy">
+                <span class="vibe-icon">🥗</span>
+                <span class="vibe-label">Healthy</span>
+              </button>
+              <button type="button" class="vibe-btn" data-vibe="exotique">
+                <span class="vibe-icon">🌶️</span>
+                <span class="vibe-label">Exotique</span>
+              </button>
+              <button type="button" class="vibe-btn" data-vibe="rapide">
+                <span class="vibe-icon">⏱️</span>
+                <span class="vibe-label">Rapide</span>
+              </button>
+            </div>
+            <input type="hidden" id="vibe" name="vibe" value="classique">
+          </div>
+
+          <button class="submit-btn" type="submit" id="submit-btn">
+            <span class="btn-text">Générer la recette</span>
+            <span class="btn-loader"></span>
+          </button>
+        </form>
+      </div>
+    </section>
+
+    <section class="recipe-section" id="recipe-section" aria-hidden="true">
+      <div class="container">
+        <div class="recipe-card" id="recipe-card">
+          <div class="recipe-header">
+            <span class="recipe-badge">✨ Création Mistral</span>
+            <h2 id="recipe-title"></h2>
+            <div class="recipe-meta" id="recipe-meta">
+              <span class="meta-item" id="meta-prep">⏱️ Préparation : --</span>
+              <span class="meta-item" id="meta-cook">🔥 Cuisson : --</span>
+              <span class="meta-item" id="meta-difficulty">📊 Difficulté : --</span>
+            </div>
+          </div>
+
+          <div class="recipe-body">
+            <div class="recipe-ingredients">
+              <h3>📝 Ingrédients</h3>
+              <ul id="recipe-ingredients-list"></ul>
+            </div>
+            <div class="recipe-steps">
+              <h3>👨‍🍳 Instructions</h3>
+              <ol id="recipe-steps-list"></ol>
+            </div>
+          </div>
+
+          <div class="recipe-tips">
+            <h3>💡 Astuce du chef</h3>
+            <p id="recipe-tip"></p>
+          </div>
+
+          <div class="recipe-actions">
+            <button class="new-recipe-btn" id="new-recipe-btn">← Nouvelle recette</button>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section class="footer">
+      <div class="container">
+        <p>Mistral Chef &mdash; un projet pour le <a href="https://mistral.ai" target="_blank" rel="noopener">hackathon Mistral AI</a></p>
+      </div>
+    </section>
+  </main>
+
+  <script src="js/scripts.js"></script>
+</body>
+</html>
