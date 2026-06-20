@@ -57,7 +57,12 @@
                 autocomplete="off"
                 required
               >
+              <button type="button" class="photo-btn" id="photo-btn" title="Prendre une photo de tes ingrédients">
+                <span class="photo-icon">📷</span>
+                <span class="photo-loader"></span>
+              </button>
             </div>
+            <input type="file" id="photo-input" accept="image/*" capture="environment" hidden>
             <p class="hint">Sépare les ingrédients par des virgules. Laisse-toi surprendre.</p>
           </div>
 
