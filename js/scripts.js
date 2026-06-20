@@ -172,3 +172,90 @@ function displayRecipe(recipe) {
   recipeSection.setAttribute("aria-hidden", "false");
   recipeSection.scrollIntoView({ behavior: "smooth", block: "start" });
 }
+
+// Photo / Camera
+const photoBtn = document.getElementById("photo-btn");
+const photoInput = document.getElementById("photo-input");
+
+photoBtn.addEventListener("click", () => {
+  photoInput.value = "";
+  photoInput.click();
+});
+
+photoInput.addEventListener("change", async (e) => {
+  const file = e.target.files[0];
+  if (!file) return;
+
+  const ingredientsInput = document.getElementById("ingredients");
+
+  try {
+    photoBtn.classList.add("is-loading");
+    photoBtn.disabled = true;
+
+    const base64 = await fileToBase64(file);
+    const result = await identifyIngredientsFromImage(base64);
+    ingredientsInput.value = result.ingredients.join(", ");
+    ingredientsInput.focus();
+  } catch (err) {
+    alert("📷 Erreur : " + (err.message || "Impossible d'analyser la photo."));
+  } finally {
+    photoBtn.classList.remove("is-loading");
+    photoBtn.disabled = false;
+  }
+});
+
+function fileToBase64(file) {
+  return new Promise((resolve, reject) => {
+    const reader = new FileReader();
+    reader.onload = () => resolve(reader.result);
+    reader.onerror = () => reject(new Error("Lecture de l'image échouée"));
+    reader.readAsDataURL(file);
+  });
+}
+
+async function identifyIngredientsFromImage(base64Image) {
+  const key = getApiKey();
+  if (!key) throw new Error("Clé API manquante — configure ta clé d'abord.");
+
+  const response = await fetch(MISTRAL_API_URL, {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json",
+      "Authorization": `Bearer ${key}`,
+    },
+    body: JSON.stringify({
+      model: "mistral-small-latest",
+      messages: [
+        {
+          role: "system",
+          content: "Tu es un expert en identification d'ingrédients alimentaires. Tu réponds uniquement en JSON valide, sans markdown.",
+        },
+        {
+          role: "user",
+          content: [
+            {
+              type: "text",
+              text: "Identifie tous les ingrédients alimentaires visibles sur cette photo. Réponds UNIQUEMENT avec un objet JSON valide (sans markdown, sans backticks) au format : { \"ingredients\": [\"ingrédient 1\", \"ingrédient 2\", \"ingrédient 3\"] }",
+            },
+            {
+              type: "image_url",
+              image_url: base64Image,
+            },
+          ],
+        },
+      ],
+      temperature: 0.3,
+      max_tokens: 500,
+      response_format: { type: "json_object" },
+    }),
+  });
+
+  if (!response.ok) {
+    const err = await response.text();
+    throw new Error(`Erreur API (${response.status})`);
+  }
+
+  const data = await response.json();
+  const content = data.choices[0].message.content;
+  return JSON.parse(content);
+}
