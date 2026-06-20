@@ -276,7 +276,7 @@ async function identifyIngredientsFromImage(base64Image) {
       "Authorization": `Bearer ${key}`,
     },
     body: JSON.stringify({
-      model: "pixtral-12b-latest",
+      model: "mistral-small-latest",
       messages: [
         {
           role: "user",
