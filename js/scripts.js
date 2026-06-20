@@ -176,10 +176,18 @@ function displayRecipe(recipe) {
 // Photo / Camera
 const photoBtn = document.getElementById("photo-btn");
 const photoInput = document.getElementById("photo-input");
+const photoPreview = document.getElementById("photo-preview");
+const photoPreviewImg = document.getElementById("photo-preview-img");
+const photoPreviewClear = document.getElementById("photo-preview-clear");
 
 photoBtn.addEventListener("click", () => {
   photoInput.value = "";
   photoInput.click();
+});
+
+photoPreviewClear.addEventListener("click", () => {
+  photoPreview.classList.remove("is-visible");
+  photoPreviewImg.src = "";
 });
 
 photoInput.addEventListener("change", async (e) => {
@@ -188,19 +196,63 @@ photoInput.addEventListener("change", async (e) => {
 
   const ingredientsInput = document.getElementById("ingredients");
 
-  try {
-    photoBtn.classList.add("is-loading");
-    photoBtn.disabled = true;
+  photoBtn.classList.add("is-loading");
+  photoBtn.disabled = true;
 
+  try {
     const base64 = await fileToBase64(file);
+    showPhotoPreview(base64);
     const result = await identifyIngredientsFromImage(base64);
     ingredientsInput.value = result.ingredients.join(", ");
     ingredientsInput.focus();
   } catch (err) {
-    alert("📷 Erreur : " + (err.message || "Impossible d'analyser la photo."));
+    photoPreview.classList.remove("is-visible");
+    const msg = document.getElementById("photo-error");
+    msg.textContent = "📷 " + (err.message || "Impossible d'analyser la photo.");
+    msg.style.display = "block";
+    setTimeout(() => { msg.style.display = "none"; }, 4000);
   } finally {
     photoBtn.classList.remove("is-loading");
     photoBtn.disabled = false;
+  }
+});
+
+function showPhotoPreview(base64) {
+  photoPreviewImg.src = base64;
+  photoPreview.classList.add("is-visible");
+}
+
+const dropZone = document.querySelector(".input-wrapper");
+let dragCounter = 0;
+
+dropZone.addEventListener("dragenter", (e) => {
+  e.preventDefault();
+  e.stopPropagation();
+  dragCounter++;
+  dropZone.classList.add("is-dragover");
+});
+
+dropZone.addEventListener("dragleave", (e) => {
+  e.preventDefault();
+  e.stopPropagation();
+  dragCounter--;
+  if (dragCounter === 0) dropZone.classList.remove("is-dragover");
+});
+
+dropZone.addEventListener("dragover", (e) => {
+  e.preventDefault();
+  e.stopPropagation();
+});
+
+dropZone.addEventListener("drop", (e) => {
+  e.preventDefault();
+  e.stopPropagation();
+  dragCounter = 0;
+  dropZone.classList.remove("is-dragover");
+  const files = e.dataTransfer.files;
+  if (files.length > 0 && files[0].type.startsWith("image/")) {
+    photoInput.files = files;
+    photoInput.dispatchEvent(new Event("change"));
   }
 });
 
@@ -224,18 +276,14 @@ async function identifyIngredientsFromImage(base64Image) {
       "Authorization": `Bearer ${key}`,
     },
     body: JSON.stringify({
-      model: "mistral-small-latest",
+      model: "pixtral-12b-latest",
       messages: [
-        {
-          role: "system",
-          content: "Tu es un expert en identification d'ingrédients alimentaires. Tu réponds uniquement en JSON valide, sans markdown.",
-        },
         {
           role: "user",
           content: [
             {
               type: "text",
-              text: "Identifie tous les ingrédients alimentaires visibles sur cette photo. Réponds UNIQUEMENT avec un objet JSON valide (sans markdown, sans backticks) au format : { \"ingredients\": [\"ingrédient 1\", \"ingrédient 2\", \"ingrédient 3\"] }",
+              text: "Tu es un expert en identification d'ingrédients alimentaires. Identifie tous les ingrédients alimentaires visibles sur cette photo. Réponds UNIQUEMENT avec un objet JSON valide (sans markdown, sans backticks) au format : { \"ingredients\": [\"ingrédient 1\", \"ingrédient 2\", \"ingrédient 3\"] }",
             },
             {
               type: "image_url",
@@ -246,7 +294,6 @@ async function identifyIngredientsFromImage(base64Image) {
       ],
       temperature: 0.3,
       max_tokens: 500,
-      response_format: { type: "json_object" },
     }),
   });
 
@@ -257,5 +304,7 @@ async function identifyIngredientsFromImage(base64Image) {
 
   const data = await response.json();
   const content = data.choices[0].message.content;
-  return JSON.parse(content);
+  const jsonMatch = content.match(/\{[\s\S]*\}/);
+  if (jsonMatch) return JSON.parse(jsonMatch[0]);
+  throw new Error("Réponse invalide de l'API");
 }
