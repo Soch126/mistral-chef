@@ -1,5 +1,10 @@
-const MISTRAL_API_KEY = "SZeTPWEKl9X0Bi4aRrn763WJEMRZARp2";
 const MISTRAL_API_URL = "https://api.mistral.ai/v1/chat/completions";
+
+const apiKeyInput = document.getElementById("api-key-input");
+const apiKeySection = document.getElementById("api-key-section");
+const apiKeyForm = document.getElementById("api-key-form");
+const apiKeySubmit = document.getElementById("api-key-submit");
+const apiKeyError = document.getElementById("api-key-error");
 
 const form = document.getElementById("recipe-form");
 const submitBtn = document.getElementById("submit-btn");
@@ -26,6 +31,40 @@ vibeBtns.forEach((btn) => {
 });
 
 vibeBtns[0].classList.add("is-active");
+
+function getApiKey() {
+  return localStorage.getItem("mistral_chef_api_key") || "";
+}
+
+function setApiKey(key) {
+  localStorage.setItem("mistral_chef_api_key", key.trim());
+}
+
+function toggleApiKeySection() {
+  const key = getApiKey();
+  if (key) {
+    apiKeySection.style.display = "none";
+    form.style.display = "grid";
+  } else {
+    apiKeySection.style.display = "block";
+    form.style.display = "none";
+  }
+}
+
+apiKeyForm.addEventListener("submit", (e) => {
+  e.preventDefault();
+  const key = apiKeyInput.value.trim();
+  if (!key || key.length < 10) {
+    apiKeyError.textContent = "❌ Clé API invalide. Vérifie sur console.mistral.ai";
+    apiKeyError.style.display = "block";
+    return;
+  }
+  apiKeyError.style.display = "none";
+  setApiKey(key);
+  toggleApiKeySection();
+});
+
+toggleApiKeySection();
 
 newRecipeBtn.addEventListener("click", () => {
   recipeSection.classList.remove("is-visible");
@@ -76,11 +115,17 @@ Sois créatif, précis et inspirant. La recette doit être réaliste et délicie
 }
 
 async function callMistral(prompt) {
+  const key = getApiKey();
+  if (!key) {
+    toggleApiKeySection();
+    throw new Error("Clé API manquante");
+  }
+
   const response = await fetch(MISTRAL_API_URL, {
     method: "POST",
     headers: {
       "Content-Type": "application/json",
-      "Authorization": `Bearer ${MISTRAL_API_KEY}`,
+      "Authorization": `Bearer ${key}`,
     },
     body: JSON.stringify({
       model: "mistral-small-latest",

@@ -22,7 +22,29 @@
           <p class="subtitle">Donnez-nous des ingrédients, recevez une recette digne d'un grand chef. <span class="accent">Gratuit, instantané, surprenant.</span></p>
         </div>
 
-        <form class="chef-form" id="recipe-form">
+        <div id="api-key-section">
+          <form class="api-key-form" id="api-key-form">
+            <div class="input-group">
+              <label for="api-key-input">🔑 Clé API Mistral</label>
+              <div class="input-wrapper">
+                <input
+                  type="password"
+                  id="api-key-input"
+                  placeholder="ta clé API Mistral..."
+                  autocomplete="off"
+                  required
+                >
+              </div>
+              <p class="hint">Disponible sur <a href="https://console.mistral.ai" target="_blank" rel="noopener" style="color: var(--gold);">console.mistral.ai</a> &mdash; elle reste sur ton navigateur.</p>
+              <p class="error-message" id="api-key-error" style="display: none;"></p>
+            </div>
+            <button class="submit-btn" type="submit" id="api-key-submit">
+              <span class="btn-text">Valider la clé</span>
+            </button>
+          </form>
+        </div>
+
+        <form class="chef-form" id="recipe-form" style="display: none;">
           <div class="input-group">
             <label for="ingredients">Tes ingrédients</label>
             <div class="input-wrapper">

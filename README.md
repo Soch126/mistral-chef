@@ -8,6 +8,15 @@ Transformez vos ingrédients en recettes uniques grâce à l'intelligence artifi
 - JavaScript vanilla (fetch API Mistral)
 - [Mistral AI API](https://docs.mistral.ai/) (mistral-small-latest)
 
+## 🔑 Configuration
+
+1. Crée un compte sur [console.mistral.ai](https://console.mistral.ai) et génère une clé API
+2. Copie le fichier `.env.example` en `.env` (optionnel — sert de référence)
+3. Ouvre `index.html` dans ton navigateur
+4. Colle ta clé API dans le champ prévu à l'ouverture de la page
+
+> La clé est stockée uniquement dans le **localStorage** de ton navigateur. Rien n'est envoyé ailleurs que vers l'API Mistral.
+
 ## Fonctionnalités
 
 - Saisie libre d'ingrédients
