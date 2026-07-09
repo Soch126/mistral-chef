@@ -796,7 +796,7 @@ async function identifyIngredientsFromImage(base64Image) {
 
   if (!response.ok) {
     const err = await response.text();
-    throw new Error(`Erreur API (${response.status})`);
+    throw new Error(`Erreur API (${response.status}) : ${err}`);
   }
 
   const data = await response.json();
