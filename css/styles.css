@@ -211,6 +211,10 @@ h1 span {
   color: rgba(245, 239, 230, 0.25);
 }
 
+.servings-wrapper input {
+  max-width: 100px;
+}
+
 .photo-btn {
   flex: 0 0 auto;
   display: grid;

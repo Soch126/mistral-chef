@@ -128,6 +128,7 @@ form.addEventListener("submit", async (e) => {
 
   const ingredients = document.getElementById("ingredients").value.trim();
   const vibe = vibeInput.value;
+  const servings = Number(document.getElementById("servings").value) || 2;
 
   if (!ingredients) return;
 
@@ -135,7 +136,7 @@ form.addEventListener("submit", async (e) => {
   submitBtn.disabled = true;
 
   try {
-    const prompt = buildPrompt(ingredients, vibe);
+    const prompt = buildPrompt(ingredients, vibe, servings);
     const recipe = await callMistral(prompt);
     displayRecipe(recipe);
   } catch (err) {
@@ -148,8 +149,8 @@ form.addEventListener("submit", async (e) => {
   }
 });
 
-function buildPrompt(ingredients, vibe) {
-  return `Tu es un grand chef cuisinier. À partir des ingrédients suivants : "${ingredients}", et avec une ambiance "${vibe}", crée une recette complète et originale.
+function buildPrompt(ingredients, vibe, servings) {
+  return `Tu es un grand chef cuisinier. À partir des ingrédients suivants : "${ingredients}", et avec une ambiance "${vibe}", crée une recette complète et originale pour ${servings} personne(s). Adapte les quantités des ingrédients au nombre de personnes.
 
 Réponds UNIQUEMENT avec un objet JSON valide (sans markdown, sans backticks) au format suivant :
 {
