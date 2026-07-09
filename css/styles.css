@@ -482,6 +482,34 @@ h1 span {
   background: rgba(212, 168, 83, 0.06);
 }
 
+.history-list li,
+.favorites-list li {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+}
+
+.history-delete,
+.favorite-delete {
+  border: 1px solid var(--line);
+  border-radius: 50%;
+  background: rgba(255, 255, 255, 0.02);
+  color: var(--cream-muted);
+  width: 26px;
+  height: 26px;
+  line-height: 1;
+  font-size: 0.75rem;
+  cursor: pointer;
+  transition: all 200ms ease;
+}
+
+.history-delete:hover,
+.favorite-delete:hover {
+  border-color: rgba(220, 90, 90, 0.5);
+  color: #dc5a5a;
+  background: rgba(220, 90, 90, 0.08);
+}
+
 /* =========================
    Diet selector
 ========================= */
