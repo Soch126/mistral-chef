@@ -432,6 +432,23 @@ h1 span {
   to { transform: rotate(360deg); }
 }
 
+.clear-key-btn {
+  justify-self: center;
+  border: 0;
+  background: transparent;
+  color: rgba(196, 184, 168, 0.5);
+  font-family: var(--font-body);
+  font-size: 0.82rem;
+  font-weight: 500;
+  cursor: pointer;
+  transition: color 200ms ease;
+  padding: 4px 8px;
+}
+
+.clear-key-btn:hover {
+  color: var(--gold-light);
+}
+
 /* =========================
    Recipe Section
 ========================= */

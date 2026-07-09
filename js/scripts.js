@@ -19,6 +19,7 @@ const ingredientsList = document.getElementById("recipe-ingredients-list");
 const stepsList = document.getElementById("recipe-steps-list");
 const recipeTip = document.getElementById("recipe-tip");
 const newRecipeBtn = document.getElementById("new-recipe-btn");
+const clearKeyBtn = document.getElementById("clear-key-btn");
 const vibeInput = document.getElementById("vibe");
 const vibeBtns = document.querySelectorAll(".vibe-btn");
 
@@ -38,6 +39,11 @@ function getApiKey() {
 
 function setApiKey(key) {
   localStorage.setItem("mistral_chef_api_key", key.trim());
+}
+
+function clearApiKey() {
+  localStorage.removeItem("mistral_chef_api_key");
+  apiKeyInput.value = "";
 }
 
 function toggleApiKeySection() {
@@ -65,6 +71,12 @@ apiKeyForm.addEventListener("submit", (e) => {
 });
 
 toggleApiKeySection();
+
+clearKeyBtn.addEventListener("click", () => {
+  clearApiKey();
+  toggleApiKeySection();
+  apiKeyInput.focus();
+});
 
 newRecipeBtn.addEventListener("click", () => {
   recipeSection.classList.remove("is-visible");
