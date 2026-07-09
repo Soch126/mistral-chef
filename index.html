@@ -99,20 +99,20 @@
 
           <div class="input-group">
             <label for="vibe" data-i18n="vibeLabel">L'ambiance</label>
-            <div class="vibe-selector" id="vibe-selector">
-              <button type="button" class="vibe-btn" data-vibe="classique">
+            <div class="vibe-selector" id="vibe-selector" role="group" aria-label="L'ambiance">
+              <button type="button" class="vibe-btn" data-vibe="classique" aria-pressed="true">
                 <span class="vibe-icon">🍽️</span>
                 <span class="vibe-label" data-i18n="vibeClassic">Classique</span>
               </button>
-              <button type="button" class="vibe-btn" data-vibe="healthy">
+              <button type="button" class="vibe-btn" data-vibe="healthy" aria-pressed="false">
                 <span class="vibe-icon">🥗</span>
                 <span class="vibe-label" data-i18n="vibeHealthy">Healthy</span>
               </button>
-              <button type="button" class="vibe-btn" data-vibe="exotique">
+              <button type="button" class="vibe-btn" data-vibe="exotique" aria-pressed="false">
                 <span class="vibe-icon">🌶️</span>
                 <span class="vibe-label" data-i18n="vibeExotic">Exotique</span>
               </button>
-              <button type="button" class="vibe-btn" data-vibe="rapide">
+              <button type="button" class="vibe-btn" data-vibe="rapide" aria-pressed="false">
                 <span class="vibe-icon">⏱️</span>
                 <span class="vibe-label" data-i18n="vibeQuick">Rapide</span>
               </button>
@@ -122,13 +122,13 @@
 
           <div class="input-group">
             <label for="diet-selector">Régime / allergènes (optionnel)</label>
-            <div class="diet-selector" id="diet-selector">
-              <button type="button" class="diet-btn" data-diet="vegetarien">🥦 Végétarien</button>
-              <button type="button" class="diet-btn" data-diet="vegan">🌱 Vegan</button>
-              <button type="button" class="diet-btn" data-diet="sans-gluten">🌾 Sans gluten</button>
-              <button type="button" class="diet-btn" data-diet="sans-lactose">🥛 Sans lactose</button>
-              <button type="button" class="diet-btn" data-diet="halal">☪️ Halal</button>
-              <button type="button" class="diet-btn" data-diet="sans-fruits-a-coque">🥜 Sans fruits à coque</button>
+            <div class="diet-selector" id="diet-selector" role="group" aria-label="Régime / allergènes (optionnel)">
+              <button type="button" class="diet-btn" data-diet="vegetarien" aria-pressed="false">🥦 Végétarien</button>
+              <button type="button" class="diet-btn" data-diet="vegan" aria-pressed="false">🌱 Vegan</button>
+              <button type="button" class="diet-btn" data-diet="sans-gluten" aria-pressed="false">🌾 Sans gluten</button>
+              <button type="button" class="diet-btn" data-diet="sans-lactose" aria-pressed="false">🥛 Sans lactose</button>
+              <button type="button" class="diet-btn" data-diet="halal" aria-pressed="false">☪️ Halal</button>
+              <button type="button" class="diet-btn" data-diet="sans-fruits-a-coque" aria-pressed="false">🥜 Sans fruits à coque</button>
             </div>
           </div>
 
