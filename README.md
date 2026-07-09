@@ -17,6 +17,21 @@ Transformez vos ingrédients en recettes uniques grâce à l'intelligence artifi
 
 > La clé est stockée uniquement dans le **localStorage** de ton navigateur. Rien n'est envoyé ailleurs que vers l'API Mistral.
 
+### Option : proxy serverless (sans clé côté utilisateur)
+
+Pour un déploiement où tu ne veux pas demander une clé API à chaque visiteur, un proxy
+serverless est fourni dans `api/mistral.js` (compatible Vercel) :
+
+1. Déploie le repo sur Vercel
+2. Ajoute la variable d'environnement `MISTRAL_API_KEY` dans les settings du projet
+3. Dans `index.html`, ajoute avant `js/scripts.js` :
+   ```html
+   <script>window.MISTRAL_CHEF_USE_PROXY = true;</script>
+   ```
+
+Le front appellera alors `/api/mistral` au lieu de l'API Mistral directement, et les
+visiteurs n'ont plus besoin de fournir leur propre clé.
+
 ## Fonctionnalités
 
 - Saisie libre d'ingrédients
