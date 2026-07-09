@@ -1,0 +1,16 @@
+{
+  "name": "mistral-chef",
+  "private": true,
+  "version": "1.0.0",
+  "description": "Mistral Chef - Transformez vos ingredients en recettes avec l'IA",
+  "scripts": {
+    "lint:js": "eslint js/**/*.js",
+    "lint:css": "stylelint css/**/*.css",
+    "lint": "npm run lint:js && npm run lint:css"
+  },
+  "devDependencies": {
+    "eslint": "^8.57.0",
+    "stylelint": "^16.6.1",
+    "stylelint-config-standard": "^36.0.1"
+  }
+}
