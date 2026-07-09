@@ -241,11 +241,21 @@ photoPreviewClear.addEventListener("click", () => {
   photoPreviewImg.src = "";
 });
 
+const MAX_PHOTO_SIZE_BYTES = 5 * 1024 * 1024; // 5 Mo
+
 photoInput.addEventListener("change", async (e) => {
   const file = e.target.files[0];
   if (!file) return;
 
   const ingredientsInput = document.getElementById("ingredients");
+
+  if (file.size > MAX_PHOTO_SIZE_BYTES) {
+    const msg = document.getElementById("photo-error");
+    msg.textContent = "📷 Image trop lourde (max 5 Mo). Choisis une photo plus légère.";
+    msg.style.display = "block";
+    setTimeout(() => { msg.style.display = "none"; }, 4000);
+    return;
+  }
 
   photoBtn.classList.add("is-loading");
   photoBtn.disabled = true;
