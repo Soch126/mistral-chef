@@ -1,3 +1,7 @@
+/* global buildPrompt, recipeToText */
+// buildPrompt et recipeToText vivent dans js/utils.js (chargé avant ce
+// fichier dans index.html) pour rester testables sans DOM avec `node --test`.
+
 const THEME_KEY = "mistral_chef_theme";
 const themeToggle = document.getElementById("theme-toggle");
 
@@ -434,7 +438,7 @@ async function generateRecipe(ingredients, vibe, servings, diets, triggerBtn) {
   startLoadingMessages();
 
   try {
-    const prompt = buildPrompt(ingredients, vibe, servings, diets);
+    const prompt = buildPrompt(ingredients, vibe, servings, diets, getLang());
     const recipe = await callMistral(prompt);
     recipeCard.style.display = "";
     displayRecipe(recipe);
@@ -467,48 +471,6 @@ variantBtn.addEventListener("click", async () => {
   if (!lastParams) return;
   await generateRecipe(lastParams.ingredients, lastParams.vibe, lastParams.servings, lastParams.diets, variantBtn);
 });
-
-function buildPrompt(ingredients, vibe, servings, diets = []) {
-  if (getLang() === "en") {
-    const dietConstraintEn = diets.length > 0
-      ? `\n\nCritical dietary constraint: the recipe must respect ${diets.join(", ")}. Do not use any ingredient that would violate it.`
-      : "";
-
-    return `You are a great chef. From the following ingredients: "${ingredients}", and with a "${vibe}" vibe, create a complete, original recipe for ${servings} serving(s). Adjust ingredient quantities to the number of servings.${dietConstraintEn}
-
-Reply ONLY with a valid JSON object (no markdown, no backticks) in this format:
-{
-  "title": "Recipe name",
-  "prep_time": "prep time",
-  "cook_time": "cook time",
-  "difficulty": "Easy / Medium / Hard",
-  "ingredients": ["ingredient 1 with quantity", "ingredient 2 with quantity"],
-  "steps": ["detailed step 1", "detailed step 2"],
-  "tip": "a chef's tip to nail this dish"
-}
-
-Be creative, precise, and inspiring. The recipe must be realistic and delicious. Respond in English.`;
-  }
-
-  const dietConstraint = diets.length > 0
-    ? `\n\nContrainte alimentaire impérative : la recette doit respecter ${diets.join(", ")}. N'utilise aucun ingrédient qui l'enfreindrait.`
-    : "";
-
-  return `Tu es un grand chef cuisinier. À partir des ingrédients suivants : "${ingredients}", et avec une ambiance "${vibe}", crée une recette complète et originale pour ${servings} personne(s). Adapte les quantités des ingrédients au nombre de personnes.${dietConstraint}
-
-Réponds UNIQUEMENT avec un objet JSON valide (sans markdown, sans backticks) au format suivant :
-{
-  "title": "Nom de la recette",
-  "prep_time": "temps de préparation",
-  "cook_time": "temps de cuisson",
-  "difficulty": "Facile / Intermédiaire / Difficile",
-  "ingredients": ["ingrédient 1 avec quantité", "ingrédient 2 avec quantité"],
-  "steps": ["étape 1 détaillée", "étape 2 détaillée"],
-  "tip": "une astuce de chef pour réussir ce plat"
-}
-
-Sois créatif, précis et inspirant. La recette doit être réaliste et délicieuse.`;
-}
 
 const streamingPreview = document.getElementById("streaming-preview");
 
@@ -587,25 +549,6 @@ async function callMistral(prompt) {
   }
 
   return JSON.parse(content);
-}
-
-function recipeToText(recipe) {
-  const lines = [
-    recipe.title,
-    "",
-    `Préparation : ${recipe.prep_time}`,
-    `Cuisson : ${recipe.cook_time}`,
-    `Difficulté : ${recipe.difficulty}`,
-    "",
-    "Ingrédients :",
-    ...recipe.ingredients.map((ing) => `- ${ing}`),
-    "",
-    "Instructions :",
-    ...recipe.steps.map((step, i) => `${i + 1}. ${step}`),
-    "",
-    `Astuce du chef : ${recipe.tip}`,
-  ];
-  return lines.join("\n");
 }
 
 function updateFavoriteBtn(recipe) {
