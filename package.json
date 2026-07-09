@@ -6,7 +6,8 @@
   "scripts": {
     "lint:js": "eslint js/**/*.js",
     "lint:css": "stylelint css/**/*.css",
-    "lint": "npm run lint:js && npm run lint:css"
+    "lint": "npm run lint:js && npm run lint:css",
+    "test": "node --test"
   },
   "devDependencies": {
     "eslint": "^8.57.0",
