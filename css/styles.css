@@ -624,9 +624,14 @@ h1 span {
   padding: 20px 32px;
   border-top: 1px solid var(--line);
   text-align: center;
+  display: flex;
+  justify-content: center;
+  gap: 8px;
+  flex-wrap: wrap;
 }
 
-.new-recipe-btn {
+.new-recipe-btn,
+.variant-btn {
   border: 0;
   background: transparent;
   color: var(--cream-muted);
@@ -636,10 +641,25 @@ h1 span {
   cursor: pointer;
   transition: color 200ms ease;
   padding: 8px 16px;
+  position: relative;
 }
 
-.new-recipe-btn:hover {
+.new-recipe-btn:hover,
+.variant-btn:hover {
   color: var(--gold-light);
+}
+
+.variant-btn.is-loading .btn-text {
+  opacity: 0;
+}
+
+.variant-btn.is-loading .btn-loader {
+  display: block;
+  border-top-color: var(--gold);
+}
+
+.variant-btn .btn-loader {
+  border-color: rgba(196, 184, 168, 0.25);
 }
 
 /* =========================

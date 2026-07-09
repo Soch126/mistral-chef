@@ -19,6 +19,8 @@ const ingredientsList = document.getElementById("recipe-ingredients-list");
 const stepsList = document.getElementById("recipe-steps-list");
 const recipeTip = document.getElementById("recipe-tip");
 const newRecipeBtn = document.getElementById("new-recipe-btn");
+const variantBtn = document.getElementById("variant-btn");
+let lastParams = null;
 const vibeInput = document.getElementById("vibe");
 const vibeBtns = document.querySelectorAll(".vibe-btn");
 
@@ -72,16 +74,11 @@ newRecipeBtn.addEventListener("click", () => {
   form.scrollIntoView({ behavior: "smooth" });
 });
 
-form.addEventListener("submit", async (e) => {
-  e.preventDefault();
+async function generateRecipe(ingredients, vibe, triggerBtn) {
+  lastParams = { ingredients, vibe };
 
-  const ingredients = document.getElementById("ingredients").value.trim();
-  const vibe = vibeInput.value;
-
-  if (!ingredients) return;
-
-  submitBtn.classList.add("is-loading");
-  submitBtn.disabled = true;
+  triggerBtn.classList.add("is-loading");
+  triggerBtn.disabled = true;
 
   try {
     const prompt = buildPrompt(ingredients, vibe);
@@ -92,9 +89,25 @@ form.addEventListener("submit", async (e) => {
     recipeSection.classList.add("is-visible");
     recipeSection.setAttribute("aria-hidden", "false");
   } finally {
-    submitBtn.classList.remove("is-loading");
-    submitBtn.disabled = false;
+    triggerBtn.classList.remove("is-loading");
+    triggerBtn.disabled = false;
   }
+}
+
+form.addEventListener("submit", async (e) => {
+  e.preventDefault();
+
+  const ingredients = document.getElementById("ingredients").value.trim();
+  const vibe = vibeInput.value;
+
+  if (!ingredients) return;
+
+  await generateRecipe(ingredients, vibe, submitBtn);
+});
+
+variantBtn.addEventListener("click", async () => {
+  if (!lastParams) return;
+  await generateRecipe(lastParams.ingredients, lastParams.vibe, variantBtn);
 });
 
 function buildPrompt(ingredients, vibe) {
