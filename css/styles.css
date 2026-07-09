@@ -467,6 +467,40 @@ h1 span {
 }
 
 /* =========================
+   Diet selector
+========================= */
+.diet-selector {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+.diet-btn {
+  border: 1px solid var(--line);
+  border-radius: 999px;
+  background: rgba(255, 255, 255, 0.02);
+  color: var(--cream-muted);
+  font-family: var(--font-body);
+  font-size: 0.82rem;
+  font-weight: 500;
+  padding: 8px 14px;
+  cursor: pointer;
+  transition: all 200ms ease;
+}
+
+.diet-btn:hover {
+  border-color: rgba(212, 168, 83, 0.3);
+  background: rgba(212, 168, 83, 0.04);
+}
+
+.diet-btn.is-active {
+  border-color: var(--gold);
+  background: rgba(212, 168, 83, 0.1);
+  color: var(--gold-light);
+  box-shadow: 0 0 0 1px rgba(212, 168, 83, 0.3);
+}
+
+/* =========================
    Submit
 ========================= */
 .submit-btn {

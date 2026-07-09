@@ -145,6 +145,22 @@ vibeBtns.forEach((btn) => {
 
 vibeBtns[0].classList.add("is-active");
 
+const dietBtns = document.querySelectorAll(".diet-btn");
+const selectedDiets = new Set();
+
+dietBtns.forEach((btn) => {
+  btn.addEventListener("click", () => {
+    const diet = btn.dataset.diet;
+    if (selectedDiets.has(diet)) {
+      selectedDiets.delete(diet);
+      btn.classList.remove("is-active");
+    } else {
+      selectedDiets.add(diet);
+      btn.classList.add("is-active");
+    }
+  });
+});
+
 function getApiKey() {
   return localStorage.getItem("mistral_chef_api_key") || "";
 }
@@ -284,7 +300,7 @@ form.addEventListener("submit", async (e) => {
   recipeSection.scrollIntoView({ behavior: "smooth", block: "start" });
 
   try {
-    const prompt = buildPrompt(ingredients, vibe, servings);
+    const prompt = buildPrompt(ingredients, vibe, servings, [...selectedDiets]);
     const recipe = await callMistral(prompt);
     recipeCard.style.display = "";
     displayRecipe(recipe);
@@ -299,8 +315,12 @@ form.addEventListener("submit", async (e) => {
   }
 });
 
-function buildPrompt(ingredients, vibe, servings) {
-  return `Tu es un grand chef cuisinier. À partir des ingrédients suivants : "${ingredients}", et avec une ambiance "${vibe}", crée une recette complète et originale pour ${servings} personne(s). Adapte les quantités des ingrédients au nombre de personnes.
+function buildPrompt(ingredients, vibe, servings, diets = []) {
+  const dietConstraint = diets.length > 0
+    ? `\n\nContrainte alimentaire impérative : la recette doit respecter ${diets.join(", ")}. N'utilise aucun ingrédient qui l'enfreindrait.`
+    : "";
+
+  return `Tu es un grand chef cuisinier. À partir des ingrédients suivants : "${ingredients}", et avec une ambiance "${vibe}", crée une recette complète et originale pour ${servings} personne(s). Adapte les quantités des ingrédients au nombre de personnes.${dietConstraint}
 
 Réponds UNIQUEMENT avec un objet JSON valide (sans markdown, sans backticks) au format suivant :
 {

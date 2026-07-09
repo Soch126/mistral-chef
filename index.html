@@ -114,6 +114,18 @@
             <input type="hidden" id="vibe" name="vibe" value="classique">
           </div>
 
+          <div class="input-group">
+            <label for="diet-selector">Régime / allergènes (optionnel)</label>
+            <div class="diet-selector" id="diet-selector">
+              <button type="button" class="diet-btn" data-diet="vegetarien">🥦 Végétarien</button>
+              <button type="button" class="diet-btn" data-diet="vegan">🌱 Vegan</button>
+              <button type="button" class="diet-btn" data-diet="sans-gluten">🌾 Sans gluten</button>
+              <button type="button" class="diet-btn" data-diet="sans-lactose">🥛 Sans lactose</button>
+              <button type="button" class="diet-btn" data-diet="halal">☪️ Halal</button>
+              <button type="button" class="diet-btn" data-diet="sans-fruits-a-coque">🥜 Sans fruits à coque</button>
+            </div>
+          </div>
+
           <button class="submit-btn" type="submit" id="submit-btn">
             <span class="btn-text">Générer la recette</span>
             <span class="btn-loader"></span>
