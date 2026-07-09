@@ -252,8 +252,12 @@ const vibeBtns = document.querySelectorAll(".vibe-btn");
 
 vibeBtns.forEach((btn) => {
   btn.addEventListener("click", () => {
-    vibeBtns.forEach((b) => b.classList.remove("is-active"));
+    vibeBtns.forEach((b) => {
+      b.classList.remove("is-active");
+      b.setAttribute("aria-pressed", "false");
+    });
     btn.classList.add("is-active");
+    btn.setAttribute("aria-pressed", "true");
     vibeInput.value = btn.dataset.vibe;
   });
 });
@@ -269,9 +273,11 @@ dietBtns.forEach((btn) => {
     if (selectedDiets.has(diet)) {
       selectedDiets.delete(diet);
       btn.classList.remove("is-active");
+      btn.setAttribute("aria-pressed", "false");
     } else {
       selectedDiets.add(diet);
       btn.classList.add("is-active");
+      btn.setAttribute("aria-pressed", "true");
     }
   });
 });
