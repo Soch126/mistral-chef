@@ -624,9 +624,14 @@ h1 span {
   padding: 20px 32px;
   border-top: 1px solid var(--line);
   text-align: center;
+  display: flex;
+  justify-content: center;
+  gap: 8px;
+  flex-wrap: wrap;
 }
 
-.new-recipe-btn {
+.new-recipe-btn,
+.share-btn {
   border: 0;
   background: transparent;
   color: var(--cream-muted);
@@ -638,7 +643,8 @@ h1 span {
   padding: 8px 16px;
 }
 
-.new-recipe-btn:hover {
+.new-recipe-btn:hover,
+.share-btn:hover {
   color: var(--gold-light);
 }
 

@@ -19,6 +19,8 @@ const ingredientsList = document.getElementById("recipe-ingredients-list");
 const stepsList = document.getElementById("recipe-steps-list");
 const recipeTip = document.getElementById("recipe-tip");
 const newRecipeBtn = document.getElementById("new-recipe-btn");
+const shareBtn = document.getElementById("share-btn");
+let currentRecipe = null;
 const vibeInput = document.getElementById("vibe");
 const vibeBtns = document.querySelectorAll(".vibe-btn");
 
@@ -65,6 +67,29 @@ apiKeyForm.addEventListener("submit", (e) => {
 });
 
 toggleApiKeySection();
+
+shareBtn.addEventListener("click", async () => {
+  if (!currentRecipe) return;
+  const text = recipeToText(currentRecipe);
+
+  if (navigator.share) {
+    try {
+      await navigator.share({ title: currentRecipe.title, text });
+    } catch {
+      // Annulé par l'utilisateur, rien à faire
+    }
+    return;
+  }
+
+  try {
+    await navigator.clipboard.writeText(text);
+    const original = shareBtn.textContent;
+    shareBtn.textContent = "✅ Copié dans le presse-papier";
+    setTimeout(() => { shareBtn.textContent = original; }, 2000);
+  } catch {
+    shareBtn.textContent = "❌ Échec du partage";
+  }
+});
 
 newRecipeBtn.addEventListener("click", () => {
   recipeSection.classList.remove("is-visible");
@@ -152,7 +177,27 @@ async function callMistral(prompt) {
   return JSON.parse(content);
 }
 
+function recipeToText(recipe) {
+  const lines = [
+    recipe.title,
+    "",
+    `Préparation : ${recipe.prep_time}`,
+    `Cuisson : ${recipe.cook_time}`,
+    `Difficulté : ${recipe.difficulty}`,
+    "",
+    "Ingrédients :",
+    ...recipe.ingredients.map((ing) => `- ${ing}`),
+    "",
+    "Instructions :",
+    ...recipe.steps.map((step, i) => `${i + 1}. ${step}`),
+    "",
+    `Astuce du chef : ${recipe.tip}`,
+  ];
+  return lines.join("\n");
+}
+
 function displayRecipe(recipe) {
+  currentRecipe = recipe;
   recipeTitle.textContent = recipe.title;
   metaPrep.textContent = `⏱️ Préparation : ${recipe.prep_time}`;
   metaCook.textContent = `🔥 Cuisson : ${recipe.cook_time}`;
