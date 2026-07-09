@@ -19,6 +19,7 @@ const ingredientsList = document.getElementById("recipe-ingredients-list");
 const stepsList = document.getElementById("recipe-steps-list");
 const recipeTip = document.getElementById("recipe-tip");
 const newRecipeBtn = document.getElementById("new-recipe-btn");
+const pdfBtn = document.getElementById("pdf-btn");
 const vibeInput = document.getElementById("vibe");
 const vibeBtns = document.querySelectorAll(".vibe-btn");
 
@@ -65,6 +66,10 @@ apiKeyForm.addEventListener("submit", (e) => {
 });
 
 toggleApiKeySection();
+
+pdfBtn.addEventListener("click", () => {
+  window.print();
+});
 
 newRecipeBtn.addEventListener("click", () => {
   recipeSection.classList.remove("is-visible");
