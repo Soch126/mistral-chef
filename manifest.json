@@ -1,0 +1,19 @@
+{
+  "name": "Mistral Chef",
+  "short_name": "Mistral Chef",
+  "description": "Transformez vos ingrédients en recettes uniques grâce à l'intelligence artificielle Mistral AI.",
+  "start_url": "./index.html",
+  "scope": "./",
+  "display": "standalone",
+  "background_color": "#0f0d0a",
+  "theme_color": "#d4a853",
+  "lang": "fr",
+  "icons": [
+    {
+      "src": "assets/favicon.svg",
+      "sizes": "any",
+      "type": "image/svg+xml",
+      "purpose": "any"
+    }
+  ]
+}
