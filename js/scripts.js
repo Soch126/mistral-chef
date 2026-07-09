@@ -1,4 +1,39 @@
 const MISTRAL_API_URL = "https://api.mistral.ai/v1/chat/completions";
+const HISTORY_KEY = "mistral_chef_history";
+const HISTORY_MAX = 10;
+
+function escapeHtml(str) {
+  const div = document.createElement("div");
+  div.textContent = String(str);
+  return div.innerHTML;
+}
+
+function getHistory() {
+  try {
+    return JSON.parse(localStorage.getItem(HISTORY_KEY)) || [];
+  } catch {
+    return [];
+  }
+}
+
+function addToHistory(recipe) {
+  const history = getHistory();
+  history.unshift({ ...recipe, savedAt: Date.now() });
+  localStorage.setItem(HISTORY_KEY, JSON.stringify(history.slice(0, HISTORY_MAX)));
+  renderHistory();
+}
+
+function renderHistory() {
+  const history = getHistory();
+  if (history.length === 0) {
+    historySection.style.display = "none";
+    return;
+  }
+  historySection.style.display = "block";
+  historyList.innerHTML = history
+    .map((recipe, i) => `<li><button type="button" class="history-item" data-index="${i}">${escapeHtml(recipe.title)}</button></li>`)
+    .join("");
+}
 
 const apiKeyInput = document.getElementById("api-key-input");
 const apiKeySection = document.getElementById("api-key-section");
@@ -19,6 +54,8 @@ const ingredientsList = document.getElementById("recipe-ingredients-list");
 const stepsList = document.getElementById("recipe-steps-list");
 const recipeTip = document.getElementById("recipe-tip");
 const newRecipeBtn = document.getElementById("new-recipe-btn");
+const historySection = document.getElementById("history");
+const historyList = document.getElementById("history-list");
 const vibeInput = document.getElementById("vibe");
 const vibeBtns = document.querySelectorAll(".vibe-btn");
 
@@ -65,6 +102,15 @@ apiKeyForm.addEventListener("submit", (e) => {
 });
 
 toggleApiKeySection();
+renderHistory();
+
+historyList.addEventListener("click", (e) => {
+  const btn = e.target.closest(".history-item");
+  if (!btn) return;
+  const history = getHistory();
+  const recipe = history[Number(btn.dataset.index)];
+  if (recipe) displayRecipe(recipe, { skipHistory: true });
+});
 
 newRecipeBtn.addEventListener("click", () => {
   recipeSection.classList.remove("is-visible");
@@ -152,7 +198,9 @@ async function callMistral(prompt) {
   return JSON.parse(content);
 }
 
-function displayRecipe(recipe) {
+function displayRecipe(recipe, { skipHistory } = {}) {
+  if (!skipHistory) addToHistory(recipe);
+
   recipeTitle.textContent = recipe.title;
   metaPrep.textContent = `⏱️ Préparation : ${recipe.prep_time}`;
   metaCook.textContent = `🔥 Cuisson : ${recipe.cook_time}`;
