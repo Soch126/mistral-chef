@@ -711,7 +711,8 @@ h1 span {
 }
 
 .new-recipe-btn,
-.copy-recipe-btn {
+.copy-recipe-btn,
+.pdf-btn {
   border: 0;
   background: transparent;
   color: var(--cream-muted);
@@ -724,7 +725,8 @@ h1 span {
 }
 
 .new-recipe-btn:hover,
-.copy-recipe-btn:hover {
+.copy-recipe-btn:hover,
+.pdf-btn:hover {
   color: var(--gold-light);
 }
 
@@ -799,5 +801,47 @@ h1 span {
   *::after {
     transition-duration: 0.01ms !important;
     animation-duration: 0.01ms !important;
+  }
+}
+
+/* =========================
+   Print (export PDF)
+========================= */
+@media print {
+  .grain,
+  .hero,
+  .footer,
+  .recipe-actions {
+    display: none !important;
+  }
+
+  body {
+    background: #fff;
+    color: #000;
+  }
+
+  .recipe-section {
+    display: block !important;
+    padding: 0;
+  }
+
+  .recipe-card {
+    border: 0;
+    box-shadow: none;
+    background: none;
+  }
+
+  .recipe-header h2,
+  .recipe-ingredients h3,
+  .recipe-steps h3,
+  .recipe-tips h3 {
+    color: #000;
+  }
+
+  .meta-item,
+  .recipe-ingredients li,
+  .recipe-steps li,
+  .recipe-tips p {
+    color: #222;
   }
 }

@@ -59,6 +59,7 @@ const newRecipeBtn = document.getElementById("new-recipe-btn");
 const clearKeyBtn = document.getElementById("clear-key-btn");
 const copyRecipeBtn = document.getElementById("copy-recipe-btn");
 let currentRecipe = null;
+const pdfBtn = document.getElementById("pdf-btn");
 const vibeInput = document.getElementById("vibe");
 const vibeBtns = document.querySelectorAll(".vibe-btn");
 
@@ -158,6 +159,10 @@ copyRecipeBtn.addEventListener("click", async () => {
   } catch {
     copyRecipeBtn.textContent = "❌ Échec de la copie";
   }
+});
+
+pdfBtn.addEventListener("click", () => {
+  window.print();
 });
 
 newRecipeBtn.addEventListener("click", () => {
