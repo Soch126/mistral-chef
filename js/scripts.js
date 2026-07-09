@@ -1,4 +1,48 @@
 const MISTRAL_API_URL = "https://api.mistral.ai/v1/chat/completions";
+const FAVORITES_KEY = "mistral_chef_favorites";
+
+function escapeHtml(str) {
+  const div = document.createElement("div");
+  div.textContent = String(str);
+  return div.innerHTML;
+}
+
+function getFavorites() {
+  try {
+    return JSON.parse(localStorage.getItem(FAVORITES_KEY)) || [];
+  } catch {
+    return [];
+  }
+}
+
+function isFavorite(recipe) {
+  return getFavorites().some((r) => r.title === recipe.title);
+}
+
+function toggleFavorite(recipe) {
+  const favorites = getFavorites();
+  const index = favorites.findIndex((r) => r.title === recipe.title);
+  if (index >= 0) {
+    favorites.splice(index, 1);
+  } else {
+    favorites.unshift(recipe);
+  }
+  localStorage.setItem(FAVORITES_KEY, JSON.stringify(favorites));
+  renderFavorites();
+  return index < 0;
+}
+
+function renderFavorites() {
+  const favorites = getFavorites();
+  if (favorites.length === 0) {
+    favoritesSection.style.display = "none";
+    return;
+  }
+  favoritesSection.style.display = "block";
+  favoritesList.innerHTML = favorites
+    .map((recipe, i) => `<li><button type="button" class="favorite-item" data-index="${i}">⭐ ${escapeHtml(recipe.title)}</button></li>`)
+    .join("");
+}
 
 const apiKeyInput = document.getElementById("api-key-input");
 const apiKeySection = document.getElementById("api-key-section");
@@ -19,6 +63,10 @@ const ingredientsList = document.getElementById("recipe-ingredients-list");
 const stepsList = document.getElementById("recipe-steps-list");
 const recipeTip = document.getElementById("recipe-tip");
 const newRecipeBtn = document.getElementById("new-recipe-btn");
+const favoriteBtn = document.getElementById("favorite-btn");
+const favoritesSection = document.getElementById("favorites");
+const favoritesList = document.getElementById("favorites-list");
+let currentRecipe = null;
 const vibeInput = document.getElementById("vibe");
 const vibeBtns = document.querySelectorAll(".vibe-btn");
 
@@ -65,6 +113,21 @@ apiKeyForm.addEventListener("submit", (e) => {
 });
 
 toggleApiKeySection();
+renderFavorites();
+
+favoriteBtn.addEventListener("click", () => {
+  if (!currentRecipe) return;
+  toggleFavorite(currentRecipe);
+  updateFavoriteBtn(currentRecipe);
+});
+
+favoritesList.addEventListener("click", (e) => {
+  const btn = e.target.closest(".favorite-item");
+  if (!btn) return;
+  const favorites = getFavorites();
+  const recipe = favorites[Number(btn.dataset.index)];
+  if (recipe) displayRecipe(recipe);
+});
 
 newRecipeBtn.addEventListener("click", () => {
   recipeSection.classList.remove("is-visible");
@@ -152,7 +215,15 @@ async function callMistral(prompt) {
   return JSON.parse(content);
 }
 
+function updateFavoriteBtn(recipe) {
+  const fav = isFavorite(recipe);
+  favoriteBtn.textContent = fav ? "★" : "☆";
+  favoriteBtn.classList.toggle("is-favorite", fav);
+}
+
 function displayRecipe(recipe) {
+  currentRecipe = recipe;
+  updateFavoriteBtn(recipe);
   recipeTitle.textContent = recipe.title;
   metaPrep.textContent = `⏱️ Préparation : ${recipe.prep_time}`;
   metaCook.textContent = `🔥 Cuisson : ${recipe.cook_time}`;

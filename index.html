@@ -100,6 +100,11 @@
             <span class="btn-loader"></span>
           </button>
         </form>
+
+        <div class="favorites" id="favorites" style="display: none;">
+          <h3 class="favorites-title">⭐ Recettes favorites</h3>
+          <ul class="favorites-list" id="favorites-list"></ul>
+        </div>
       </div>
     </section>
 
@@ -107,7 +112,10 @@
       <div class="container">
         <div class="recipe-card" id="recipe-card">
           <div class="recipe-header">
-            <span class="recipe-badge">✨ Création Mistral</span>
+            <div class="recipe-header-top">
+              <span class="recipe-badge">✨ Création Mistral</span>
+              <button type="button" class="favorite-btn" id="favorite-btn" title="Ajouter aux favoris">☆</button>
+            </div>
             <h2 id="recipe-title"></h2>
             <div class="recipe-meta" id="recipe-meta">
               <span class="meta-item" id="meta-prep">⏱️ Préparation : --</span>
