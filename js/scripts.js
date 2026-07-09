@@ -51,7 +51,18 @@ function toggleApiKeySection() {
   }
 }
 
-apiKeyForm.addEventListener("submit", (e) => {
+async function isApiKeyValid(key) {
+  try {
+    const response = await fetch("https://api.mistral.ai/v1/models", {
+      headers: { "Authorization": `Bearer ${key}` },
+    });
+    return response.ok;
+  } catch {
+    return false;
+  }
+}
+
+apiKeyForm.addEventListener("submit", async (e) => {
   e.preventDefault();
   const key = apiKeyInput.value.trim();
   if (!key || key.length < 10) {
@@ -59,7 +70,22 @@ apiKeyForm.addEventListener("submit", (e) => {
     apiKeyError.style.display = "block";
     return;
   }
+
   apiKeyError.style.display = "none";
+  apiKeySubmit.classList.add("is-loading");
+  apiKeySubmit.disabled = true;
+
+  const valid = await isApiKeyValid(key);
+
+  apiKeySubmit.classList.remove("is-loading");
+  apiKeySubmit.disabled = false;
+
+  if (!valid) {
+    apiKeyError.textContent = "❌ Cette clé a été refusée par l'API Mistral. Vérifie-la sur console.mistral.ai";
+    apiKeyError.style.display = "block";
+    return;
+  }
+
   setApiKey(key);
   toggleApiKeySection();
 });
