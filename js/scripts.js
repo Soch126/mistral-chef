@@ -134,12 +134,18 @@ form.addEventListener("submit", async (e) => {
 
   submitBtn.classList.add("is-loading");
   submitBtn.disabled = true;
+  recipeSection.classList.add("is-visible");
+  recipeSection.setAttribute("aria-hidden", "false");
+  recipeCard.style.display = "none";
+  recipeSection.scrollIntoView({ behavior: "smooth", block: "start" });
 
   try {
     const prompt = buildPrompt(ingredients, vibe, servings);
     const recipe = await callMistral(prompt);
+    recipeCard.style.display = "";
     displayRecipe(recipe);
   } catch (err) {
+    recipeCard.style.display = "";
     recipeCard.innerHTML = `<p class="error-message">❌ Erreur : ${err.message || "Impossible de générer la recette. Réessaie."}</p>`;
     recipeSection.classList.add("is-visible");
     recipeSection.setAttribute("aria-hidden", "false");
@@ -166,6 +172,8 @@ Réponds UNIQUEMENT avec un objet JSON valide (sans markdown, sans backticks) au
 Sois créatif, précis et inspirant. La recette doit être réaliste et délicieuse.`;
 }
 
+const streamingPreview = document.getElementById("streaming-preview");
+
 async function callMistral(prompt) {
   const key = getApiKey();
   if (!CONFIG.useProxy && !key) {
@@ -191,6 +199,7 @@ async function callMistral(prompt) {
       temperature: 0.8,
       max_tokens: 1500,
       response_format: { type: "json_object" },
+      stream: true,
     }),
   });
 
@@ -199,8 +208,46 @@ async function callMistral(prompt) {
     throw new Error(`API error (${response.status}): ${err}`);
   }
 
-  const data = await response.json();
-  const content = data.choices[0].message.content;
+  streamingPreview.textContent = "";
+  streamingPreview.style.display = "block";
+
+  const reader = response.body.getReader();
+  const decoder = new TextDecoder();
+  let buffer = "";
+  let content = "";
+
+  try {
+    while (true) {
+      const { done, value } = await reader.read();
+      if (done) break;
+
+      buffer += decoder.decode(value, { stream: true });
+      const lines = buffer.split("\n");
+      buffer = lines.pop();
+
+      for (const line of lines) {
+        const trimmed = line.trim();
+        if (!trimmed.startsWith("data:")) continue;
+        const data = trimmed.slice(5).trim();
+        if (data === "[DONE]") continue;
+
+        try {
+          const parsed = JSON.parse(data);
+          const delta = parsed.choices?.[0]?.delta?.content;
+          if (delta) {
+            content += delta;
+            streamingPreview.textContent = content;
+            streamingPreview.scrollTop = streamingPreview.scrollHeight;
+          }
+        } catch {
+          // Chunk incomplet, ignoré
+        }
+      }
+    }
+  } finally {
+    streamingPreview.style.display = "none";
+  }
+
   return JSON.parse(content);
 }
 
