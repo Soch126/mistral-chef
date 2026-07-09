@@ -57,6 +57,8 @@ const stepsList = document.getElementById("recipe-steps-list");
 const recipeTip = document.getElementById("recipe-tip");
 const newRecipeBtn = document.getElementById("new-recipe-btn");
 const clearKeyBtn = document.getElementById("clear-key-btn");
+const copyRecipeBtn = document.getElementById("copy-recipe-btn");
+let currentRecipe = null;
 const vibeInput = document.getElementById("vibe");
 const vibeBtns = document.querySelectorAll(".vibe-btn");
 
@@ -144,6 +146,18 @@ clearKeyBtn.addEventListener("click", () => {
   clearApiKey();
   toggleApiKeySection();
   apiKeyInput.focus();
+});
+
+copyRecipeBtn.addEventListener("click", async () => {
+  if (!currentRecipe) return;
+  try {
+    await navigator.clipboard.writeText(recipeToText(currentRecipe));
+    const original = copyRecipeBtn.textContent;
+    copyRecipeBtn.textContent = "✅ Copié !";
+    setTimeout(() => { copyRecipeBtn.textContent = original; }, 2000);
+  } catch {
+    copyRecipeBtn.textContent = "❌ Échec de la copie";
+  }
 });
 
 newRecipeBtn.addEventListener("click", () => {
@@ -280,7 +294,27 @@ async function callMistral(prompt) {
   return JSON.parse(content);
 }
 
+function recipeToText(recipe) {
+  const lines = [
+    recipe.title,
+    "",
+    `Préparation : ${recipe.prep_time}`,
+    `Cuisson : ${recipe.cook_time}`,
+    `Difficulté : ${recipe.difficulty}`,
+    "",
+    "Ingrédients :",
+    ...recipe.ingredients.map((ing) => `- ${ing}`),
+    "",
+    "Instructions :",
+    ...recipe.steps.map((step, i) => `${i + 1}. ${step}`),
+    "",
+    `Astuce du chef : ${recipe.tip}`,
+  ];
+  return lines.join("\n");
+}
+
 function displayRecipe(recipe) {
+  currentRecipe = recipe;
   recipeTitle.textContent = recipe.title;
   metaPrep.textContent = `⏱️ Préparation : ${recipe.prep_time}`;
   metaCook.textContent = `🔥 Cuisson : ${recipe.cook_time}`;
