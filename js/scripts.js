@@ -134,6 +134,7 @@ const favoritesSection = document.getElementById("favorites");
 const favoritesList = document.getElementById("favorites-list");
 const variantBtn = document.getElementById("variant-btn");
 let lastParams = null;
+const shareBtn = document.getElementById("share-btn");
 const vibeInput = document.getElementById("vibe");
 const vibeBtns = document.querySelectorAll(".vibe-btn");
 
@@ -277,6 +278,29 @@ favoriteBtn.addEventListener("click", () => {
   if (!currentRecipe) return;
   toggleFavorite(currentRecipe);
   updateFavoriteBtn(currentRecipe);
+});
+
+shareBtn.addEventListener("click", async () => {
+  if (!currentRecipe) return;
+  const text = recipeToText(currentRecipe);
+
+  if (navigator.share) {
+    try {
+      await navigator.share({ title: currentRecipe.title, text });
+    } catch {
+      // Annulé par l'utilisateur, rien à faire
+    }
+    return;
+  }
+
+  try {
+    await navigator.clipboard.writeText(text);
+    const original = shareBtn.textContent;
+    shareBtn.textContent = "✅ Copié dans le presse-papier";
+    setTimeout(() => { shareBtn.textContent = original; }, 2000);
+  } catch {
+    shareBtn.textContent = "❌ Échec du partage";
+  }
 });
 
 newRecipeBtn.addEventListener("click", () => {

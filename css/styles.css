@@ -859,7 +859,8 @@ h1 span {
 .new-recipe-btn,
 .copy-recipe-btn,
 .pdf-btn,
-.variant-btn {
+.variant-btn,
+.share-btn {
   border: 0;
   background: transparent;
   color: var(--cream-muted);
@@ -875,7 +876,8 @@ h1 span {
 .new-recipe-btn:hover,
 .copy-recipe-btn:hover,
 .pdf-btn:hover,
-.variant-btn:hover {
+.variant-btn:hover,
+.share-btn:hover {
   color: var(--gold-light);
 }
 
