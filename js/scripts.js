@@ -141,6 +141,13 @@ function addToHistory(recipe) {
   renderHistory();
 }
 
+function removeFromHistory(index) {
+  const history = getHistory();
+  history.splice(index, 1);
+  localStorage.setItem(HISTORY_KEY, JSON.stringify(history));
+  renderHistory();
+}
+
 function renderHistory() {
   const history = getHistory();
   if (history.length === 0) {
@@ -149,7 +156,12 @@ function renderHistory() {
   }
   historySection.style.display = "block";
   historyList.innerHTML = history
-    .map((recipe, i) => `<li><button type="button" class="history-item" data-index="${i}">${escapeHtml(recipe.title)}</button></li>`)
+    .map(
+      (recipe, i) => `<li>
+        <button type="button" class="history-item" data-index="${i}">${escapeHtml(recipe.title)}</button>
+        <button type="button" class="history-delete" data-index="${i}" title="Supprimer" aria-label="Supprimer ${escapeHtml(recipe.title)} de l'historique">✕</button>
+      </li>`
+    )
     .join("");
 }
 
@@ -170,6 +182,13 @@ function toggleFavorite(recipe) {
   return index < 0;
 }
 
+function removeFromFavorites(index) {
+  const favorites = getFavorites();
+  favorites.splice(index, 1);
+  localStorage.setItem(FAVORITES_KEY, JSON.stringify(favorites));
+  renderFavorites();
+}
+
 function renderFavorites() {
   const favorites = getFavorites();
   if (favorites.length === 0) {
@@ -178,7 +197,12 @@ function renderFavorites() {
   }
   favoritesSection.style.display = "block";
   favoritesList.innerHTML = favorites
-    .map((recipe, i) => `<li><button type="button" class="favorite-item" data-index="${i}">⭐ ${escapeHtml(recipe.title)}</button></li>`)
+    .map(
+      (recipe, i) => `<li>
+        <button type="button" class="favorite-item" data-index="${i}">⭐ ${escapeHtml(recipe.title)}</button>
+        <button type="button" class="favorite-delete" data-index="${i}" title="Retirer des favoris" aria-label="Retirer ${escapeHtml(recipe.title)} des favoris">✕</button>
+      </li>`
+    )
     .join("");
 }
 
@@ -355,6 +379,11 @@ renderHistory();
 renderFavorites();
 
 historyList.addEventListener("click", (e) => {
+  const deleteBtn = e.target.closest(".history-delete");
+  if (deleteBtn) {
+    removeFromHistory(Number(deleteBtn.dataset.index));
+    return;
+  }
   const btn = e.target.closest(".history-item");
   if (!btn) return;
   const history = getHistory();
@@ -363,6 +392,16 @@ historyList.addEventListener("click", (e) => {
 });
 
 favoritesList.addEventListener("click", (e) => {
+  const deleteBtn = e.target.closest(".favorite-delete");
+  if (deleteBtn) {
+    const favorites = getFavorites();
+    const removed = favorites[Number(deleteBtn.dataset.index)];
+    removeFromFavorites(Number(deleteBtn.dataset.index));
+    if (removed && currentRecipe && removed.title === currentRecipe.title) {
+      updateFavoriteBtn(currentRecipe);
+    }
+    return;
+  }
   const btn = e.target.closest(".favorite-item");
   if (!btn) return;
   const favorites = getFavorites();
