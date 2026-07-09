@@ -32,8 +32,9 @@ module.exports = async (req, res) => {
     return;
   }
 
+  let upstreamResponse;
   try {
-    const upstreamResponse = await fetch(MISTRAL_API_URL, {
+    upstreamResponse = await fetch(MISTRAL_API_URL, {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
@@ -41,12 +42,34 @@ module.exports = async (req, res) => {
       },
       body: JSON.stringify(req.body),
     });
-
-    const data = await upstreamResponse.text();
-    res.status(upstreamResponse.status);
-    res.setHeader("Content-Type", "application/json");
-    res.send(data);
   } catch (err) {
     res.status(502).json({ error: "Erreur en contactant l'API Mistral." });
+    return;
+  }
+
+  res.status(upstreamResponse.status);
+  const contentType = upstreamResponse.headers.get("content-type");
+  if (contentType) res.setHeader("Content-Type", contentType);
+
+  if (!upstreamResponse.body) {
+    res.end();
+    return;
+  }
+
+  // Relaie le flux tel quel (SSE en streaming ou JSON classique) au lieu de
+  // bufferiser toute la réponse : le front (js/scripts.js -> callMistral)
+  // envoie toujours stream: true et lit la réponse au fil de l'eau pour
+  // afficher la recette en direct pendant sa génération. Bufferiser ici
+  // cassait cet effet en mode proxy : rien ne s'affichait avant la toute
+  // fin de la génération.
+  const reader = upstreamResponse.body.getReader();
+  try {
+    while (true) {
+      const { done, value } = await reader.read();
+      if (done) break;
+      res.write(value);
+    }
+  } finally {
+    res.end();
   }
 };
