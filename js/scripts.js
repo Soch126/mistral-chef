@@ -1,5 +1,13 @@
 const MISTRAL_API_URL = "https://api.mistral.ai/v1/chat/completions";
 
+// Si un déploiement fournit un proxy serverless (voir api/mistral.js), on l'utilise
+// pour éviter de demander une clé API à chaque utilisateur. Sinon on reste en mode
+// "Bring Your Own Key" (comportement par défaut, clé stockée dans le navigateur).
+const CONFIG = {
+  useProxy: Boolean(window.MISTRAL_CHEF_USE_PROXY),
+  proxyUrl: "/api/mistral",
+};
+
 const apiKeyInput = document.getElementById("api-key-input");
 const apiKeySection = document.getElementById("api-key-section");
 const apiKeyForm = document.getElementById("api-key-form");
@@ -41,6 +49,11 @@ function setApiKey(key) {
 }
 
 function toggleApiKeySection() {
+  if (CONFIG.useProxy) {
+    apiKeySection.style.display = "none";
+    form.style.display = "grid";
+    return;
+  }
   const key = getApiKey();
   if (key) {
     apiKeySection.style.display = "none";
@@ -116,17 +129,17 @@ Sois créatif, précis et inspirant. La recette doit être réaliste et délicie
 
 async function callMistral(prompt) {
   const key = getApiKey();
-  if (!key) {
+  if (!CONFIG.useProxy && !key) {
     toggleApiKeySection();
     throw new Error("Clé API manquante");
   }
 
-  const response = await fetch(MISTRAL_API_URL, {
+  const headers = { "Content-Type": "application/json" };
+  if (!CONFIG.useProxy) headers["Authorization"] = `Bearer ${key}`;
+
+  const response = await fetch(CONFIG.useProxy ? CONFIG.proxyUrl : MISTRAL_API_URL, {
     method: "POST",
-    headers: {
-      "Content-Type": "application/json",
-      "Authorization": `Bearer ${key}`,
-    },
+    headers,
     body: JSON.stringify({
       model: "mistral-small-latest",
       messages: [
@@ -267,14 +280,14 @@ function fileToBase64(file) {
 
 async function identifyIngredientsFromImage(base64Image) {
   const key = getApiKey();
-  if (!key) throw new Error("Clé API manquante — configure ta clé d'abord.");
+  if (!CONFIG.useProxy && !key) throw new Error("Clé API manquante — configure ta clé d'abord.");
 
-  const response = await fetch(MISTRAL_API_URL, {
+  const headers = { "Content-Type": "application/json" };
+  if (!CONFIG.useProxy) headers["Authorization"] = `Bearer ${key}`;
+
+  const response = await fetch(CONFIG.useProxy ? CONFIG.proxyUrl : MISTRAL_API_URL, {
     method: "POST",
-    headers: {
-      "Content-Type": "application/json",
-      "Authorization": `Bearer ${key}`,
-    },
+    headers,
     body: JSON.stringify({
       model: "mistral-small-latest",
       messages: [
