@@ -56,19 +56,20 @@
                 placeholder="ex: poulet, citron, riz, oignons, épices..."
                 autocomplete="off"
                 required
+                aria-describedby="ingredients-hint"
               >
-              <button type="button" class="photo-btn" id="photo-btn" title="Prendre une photo de tes ingrédients">
-                <span class="photo-icon">📷</span>
-                <span class="photo-loader"></span>
+              <button type="button" class="photo-btn" id="photo-btn" title="Prendre une photo de tes ingrédients" aria-label="Prendre ou choisir une photo de tes ingrédients">
+                <span class="photo-icon" aria-hidden="true">📷</span>
+                <span class="photo-loader" aria-hidden="true"></span>
               </button>
-              <div class="drop-hint">Dépose une photo ici</div>
+              <div class="drop-hint" aria-hidden="true">Dépose une photo ici</div>
             </div>
             <div class="photo-preview" id="photo-preview">
-              <img id="photo-preview-img" alt="Aperçu">
-              <button type="button" class="photo-preview-clear" id="photo-preview-clear" title="Supprimer la photo">✕</button>
+              <img id="photo-preview-img" alt="Aperçu de la photo d'ingrédients">
+              <button type="button" class="photo-preview-clear" id="photo-preview-clear" title="Supprimer la photo" aria-label="Supprimer la photo">✕</button>
             </div>
             <input type="file" id="photo-input" accept="image/*" capture="environment" hidden>
-            <p class="hint">Sépare les ingrédients par des virgules, ou prends une photo.</p>
+            <p class="hint" id="ingredients-hint">Sépare les ingrédients par des virgules, ou prends une photo (bouton 📷 ou glisser-déposer une image).</p>
             <p class="photo-error" id="photo-error"></p>
           </div>
 
