@@ -21,6 +21,92 @@ themeToggle.addEventListener("click", () => {
 
 initTheme();
 
+const LANG_KEY = "mistral_chef_lang";
+
+const TRANSLATIONS = {
+  fr: {
+    badge: "✨ Propulsé par Mistral AI",
+    subtitle: 'Donnez-nous des ingrédients, recevez une recette digne d\'un grand chef. <span class="accent" data-i18n="subtitleAccent">Gratuit, instantané, surprenant.</span>',
+    apiKeyLabel: "🔑 Clé API Mistral",
+    apiKeyPlaceholder: "ta clé API Mistral...",
+    apiKeyHint: 'Disponible sur <a href="https://console.mistral.ai" target="_blank" rel="noopener" style="color: var(--gold);">console.mistral.ai</a> &mdash; elle reste sur ton navigateur.',
+    apiKeySubmit: "Valider la clé",
+    ingredientsLabel: "Tes ingrédients",
+    ingredientsPlaceholder: "ex: poulet, citron, riz, oignons, épices...",
+    dropHint: "Dépose une photo ici",
+    ingredientsHint: "Sépare les ingrédients par des virgules, ou prends une photo (bouton 📷 ou glisser-déposer une image).",
+    vibeLabel: "L'ambiance",
+    vibeClassic: "Classique",
+    vibeHealthy: "Healthy",
+    vibeExotic: "Exotique",
+    vibeQuick: "Rapide",
+    generateBtn: "Générer la recette",
+    recipeBadge: "✨ Création Mistral",
+    ingredientsTitle: "📝 Ingrédients",
+    stepsTitle: "👨‍🍳 Instructions",
+    tipTitle: "💡 Astuce du chef",
+    newRecipeBtn: "← Nouvelle recette",
+    footer: 'Mistral Chef &mdash; un projet pour le <a href="https://mistral.ai" target="_blank" rel="noopener">hackathon Mistral AI</a>',
+    prepLabel: "⏱️ Préparation",
+    cookLabel: "🔥 Cuisson",
+    difficultyLabel: "📊 Difficulté",
+  },
+  en: {
+    badge: "✨ Powered by Mistral AI",
+    subtitle: 'Give us your ingredients, get a recipe worthy of a great chef. <span class="accent" data-i18n="subtitleAccent">Free, instant, surprising.</span>',
+    apiKeyLabel: "🔑 Mistral API Key",
+    apiKeyPlaceholder: "your Mistral API key...",
+    apiKeyHint: 'Available at <a href="https://console.mistral.ai" target="_blank" rel="noopener" style="color: var(--gold);">console.mistral.ai</a> &mdash; it stays in your browser.',
+    apiKeySubmit: "Validate key",
+    ingredientsLabel: "Your ingredients",
+    ingredientsPlaceholder: "e.g. chicken, lemon, rice, onions, spices...",
+    dropHint: "Drop a photo here",
+    ingredientsHint: "Separate ingredients with commas, or take a photo (📷 button or drag & drop an image).",
+    vibeLabel: "The vibe",
+    vibeClassic: "Classic",
+    vibeHealthy: "Healthy",
+    vibeExotic: "Exotic",
+    vibeQuick: "Quick",
+    generateBtn: "Generate recipe",
+    recipeBadge: "✨ Mistral Creation",
+    ingredientsTitle: "📝 Ingredients",
+    stepsTitle: "👨‍🍳 Instructions",
+    tipTitle: "💡 Chef's tip",
+    newRecipeBtn: "← New recipe",
+    footer: 'Mistral Chef &mdash; a project for the <a href="https://mistral.ai" target="_blank" rel="noopener">Mistral AI hackathon</a>',
+    prepLabel: "⏱️ Prep",
+    cookLabel: "🔥 Cook",
+    difficultyLabel: "📊 Difficulty",
+  },
+};
+
+function getLang() {
+  return localStorage.getItem(LANG_KEY) || "fr";
+}
+
+function applyTranslations(lang) {
+  const dict = TRANSLATIONS[lang];
+  document.documentElement.lang = lang;
+  document.querySelectorAll("[data-i18n]").forEach((el) => {
+    const key = el.getAttribute("data-i18n");
+    if (!dict[key]) return;
+    el.innerHTML = dict[key];
+  });
+  document.querySelectorAll("[data-i18n-placeholder]").forEach((el) => {
+    const key = el.getAttribute("data-i18n-placeholder");
+    if (dict[key]) el.placeholder = dict[key];
+  });
+}
+
+const langSelect = document.getElementById("lang-select");
+langSelect.value = getLang();
+applyTranslations(getLang());
+
+langSelect.addEventListener("change", () => {
+  localStorage.setItem(LANG_KEY, langSelect.value);
+  applyTranslations(langSelect.value);
+});
+
 const MISTRAL_API_URL = "https://api.mistral.ai/v1/chat/completions";
 const HISTORY_KEY = "mistral_chef_history";
 const HISTORY_MAX = 10;
@@ -383,6 +469,27 @@ variantBtn.addEventListener("click", async () => {
 });
 
 function buildPrompt(ingredients, vibe, servings, diets = []) {
+  if (getLang() === "en") {
+    const dietConstraintEn = diets.length > 0
+      ? `\n\nCritical dietary constraint: the recipe must respect ${diets.join(", ")}. Do not use any ingredient that would violate it.`
+      : "";
+
+    return `You are a great chef. From the following ingredients: "${ingredients}", and with a "${vibe}" vibe, create a complete, original recipe for ${servings} serving(s). Adjust ingredient quantities to the number of servings.${dietConstraintEn}
+
+Reply ONLY with a valid JSON object (no markdown, no backticks) in this format:
+{
+  "title": "Recipe name",
+  "prep_time": "prep time",
+  "cook_time": "cook time",
+  "difficulty": "Easy / Medium / Hard",
+  "ingredients": ["ingredient 1 with quantity", "ingredient 2 with quantity"],
+  "steps": ["detailed step 1", "detailed step 2"],
+  "tip": "a chef's tip to nail this dish"
+}
+
+Be creative, precise, and inspiring. The recipe must be realistic and delicious. Respond in English.`;
+  }
+
   const dietConstraint = diets.length > 0
     ? `\n\nContrainte alimentaire impérative : la recette doit respecter ${diets.join(", ")}. N'utilise aucun ingrédient qui l'enfreindrait.`
     : "";
@@ -511,10 +618,11 @@ function displayRecipe(recipe, { skipHistory } = {}) {
   currentRecipe = recipe;
   if (!skipHistory) addToHistory(recipe);
   updateFavoriteBtn(recipe);
+  const dict = TRANSLATIONS[getLang()];
   recipeTitle.textContent = recipe.title;
-  metaPrep.textContent = `⏱️ Préparation : ${recipe.prep_time}`;
-  metaCook.textContent = `🔥 Cuisson : ${recipe.cook_time}`;
-  metaDifficulty.textContent = `📊 Difficulté : ${recipe.difficulty}`;
+  metaPrep.textContent = `${dict.prepLabel} : ${recipe.prep_time}`;
+  metaCook.textContent = `${dict.cookLabel} : ${recipe.cook_time}`;
+  metaDifficulty.textContent = `${dict.difficultyLabel} : ${recipe.difficulty}`;
 
   ingredientsList.innerHTML = recipe.ingredients
     .map((ing) => `<li>${escapeHtml(ing)}</li>`)

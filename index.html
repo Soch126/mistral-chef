@@ -14,34 +14,39 @@
   <div class="grain"></div>
 
   <button type="button" class="theme-toggle" id="theme-toggle" title="Changer de thème" aria-label="Basculer entre thème clair et sombre">🌙</button>
+  <select class="lang-select" id="lang-select" aria-label="Language / Langue">
+    <option value="fr">🇫🇷 FR</option>
+    <option value="en">🇬🇧 EN</option>
+  </select>
 
   <main>
     <section class="hero">
       <div class="container">
         <div class="hero-content">
-          <div class="badge">✨ Propulsé par Mistral AI</div>
+          <div class="badge" data-i18n="badge">✨ Propulsé par Mistral AI</div>
           <h1>Mistral<br><span>Chef</span></h1>
-          <p class="subtitle">Donnez-nous des ingrédients, recevez une recette digne d'un grand chef. <span class="accent">Gratuit, instantané, surprenant.</span></p>
+          <p class="subtitle" data-i18n="subtitle">Donnez-nous des ingrédients, recevez une recette digne d'un grand chef. <span class="accent" data-i18n="subtitleAccent">Gratuit, instantané, surprenant.</span></p>
         </div>
 
         <div id="api-key-section">
           <form class="api-key-form" id="api-key-form">
             <div class="input-group">
-              <label for="api-key-input">🔑 Clé API Mistral</label>
+              <label for="api-key-input" data-i18n="apiKeyLabel">🔑 Clé API Mistral</label>
               <div class="input-wrapper">
                 <input
                   type="password"
                   id="api-key-input"
+                  data-i18n-placeholder="apiKeyPlaceholder"
                   placeholder="ta clé API Mistral..."
                   autocomplete="off"
                   required
                 >
               </div>
-              <p class="hint">Disponible sur <a href="https://console.mistral.ai" target="_blank" rel="noopener" style="color: var(--gold);">console.mistral.ai</a> &mdash; elle reste sur ton navigateur.</p>
+              <p class="hint" data-i18n="apiKeyHint">Disponible sur <a href="https://console.mistral.ai" target="_blank" rel="noopener" style="color: var(--gold);">console.mistral.ai</a> &mdash; elle reste sur ton navigateur.</p>
               <p class="error-message" id="api-key-error" style="display: none;"></p>
             </div>
             <button class="submit-btn" type="submit" id="api-key-submit">
-              <span class="btn-text">Valider la clé</span>
+              <span class="btn-text" data-i18n="apiKeySubmit">Valider la clé</span>
               <span class="btn-loader"></span>
             </button>
           </form>
@@ -49,13 +54,14 @@
 
         <form class="chef-form" id="recipe-form" style="display: none;">
           <div class="input-group">
-            <label for="ingredients">Tes ingrédients</label>
+            <label for="ingredients" data-i18n="ingredientsLabel">Tes ingrédients</label>
             <div class="input-wrapper">
               <span class="input-icon">🥘</span>
               <input
                 type="text"
                 id="ingredients"
                 name="ingredients"
+                data-i18n-placeholder="ingredientsPlaceholder"
                 placeholder="ex: poulet, citron, riz, oignons, épices..."
                 autocomplete="off"
                 required
@@ -65,14 +71,14 @@
                 <span class="photo-icon" aria-hidden="true">📷</span>
                 <span class="photo-loader" aria-hidden="true"></span>
               </button>
-              <div class="drop-hint" aria-hidden="true">Dépose une photo ici</div>
+              <div class="drop-hint" data-i18n="dropHint" aria-hidden="true">Dépose une photo ici</div>
             </div>
             <div class="photo-preview" id="photo-preview">
               <img id="photo-preview-img" alt="Aperçu de la photo d'ingrédients">
               <button type="button" class="photo-preview-clear" id="photo-preview-clear" title="Supprimer la photo" aria-label="Supprimer la photo">✕</button>
             </div>
             <input type="file" id="photo-input" accept="image/*" capture="environment" hidden>
-            <p class="hint" id="ingredients-hint">Sépare les ingrédients par des virgules, ou prends une photo (bouton 📷 ou glisser-déposer une image).</p>
+            <p class="hint" id="ingredients-hint" data-i18n="ingredientsHint">Sépare les ingrédients par des virgules, ou prends une photo (bouton 📷 ou glisser-déposer une image).</p>
             <p class="photo-error" id="photo-error"></p>
           </div>
 
@@ -92,23 +98,23 @@
           </div>
 
           <div class="input-group">
-            <label for="vibe">L'ambiance</label>
+            <label for="vibe" data-i18n="vibeLabel">L'ambiance</label>
             <div class="vibe-selector" id="vibe-selector">
               <button type="button" class="vibe-btn" data-vibe="classique">
                 <span class="vibe-icon">🍽️</span>
-                <span class="vibe-label">Classique</span>
+                <span class="vibe-label" data-i18n="vibeClassic">Classique</span>
               </button>
               <button type="button" class="vibe-btn" data-vibe="healthy">
                 <span class="vibe-icon">🥗</span>
-                <span class="vibe-label">Healthy</span>
+                <span class="vibe-label" data-i18n="vibeHealthy">Healthy</span>
               </button>
               <button type="button" class="vibe-btn" data-vibe="exotique">
                 <span class="vibe-icon">🌶️</span>
-                <span class="vibe-label">Exotique</span>
+                <span class="vibe-label" data-i18n="vibeExotic">Exotique</span>
               </button>
               <button type="button" class="vibe-btn" data-vibe="rapide">
                 <span class="vibe-icon">⏱️</span>
-                <span class="vibe-label">Rapide</span>
+                <span class="vibe-label" data-i18n="vibeQuick">Rapide</span>
               </button>
             </div>
             <input type="hidden" id="vibe" name="vibe" value="classique">
@@ -127,7 +133,7 @@
           </div>
 
           <button class="submit-btn" type="submit" id="submit-btn">
-            <span class="btn-text">Générer la recette</span>
+            <span class="btn-text" data-i18n="generateBtn">Générer la recette</span>
             <span class="btn-loader"></span>
           </button>
 
@@ -153,7 +159,7 @@
         <div class="recipe-card" id="recipe-card" tabindex="-1">
           <div class="recipe-header">
             <div class="recipe-header-top">
-              <span class="recipe-badge">✨ Création Mistral</span>
+              <span class="recipe-badge" data-i18n="recipeBadge">✨ Création Mistral</span>
               <button type="button" class="favorite-btn" id="favorite-btn" title="Ajouter aux favoris">☆</button>
             </div>
             <h2 id="recipe-title"></h2>
@@ -166,17 +172,17 @@
 
           <div class="recipe-body">
             <div class="recipe-ingredients">
-              <h3>📝 Ingrédients</h3>
+              <h3 data-i18n="ingredientsTitle">📝 Ingrédients</h3>
               <ul id="recipe-ingredients-list"></ul>
             </div>
             <div class="recipe-steps">
-              <h3>👨‍🍳 Instructions</h3>
+              <h3 data-i18n="stepsTitle">👨‍🍳 Instructions</h3>
               <ol id="recipe-steps-list"></ol>
             </div>
           </div>
 
           <div class="recipe-tips">
-            <h3>💡 Astuce du chef</h3>
+            <h3 data-i18n="tipTitle">💡 Astuce du chef</h3>
             <p id="recipe-tip"></p>
           </div>
 
@@ -188,7 +194,7 @@
               <span class="btn-loader"></span>
             </button>
             <button class="share-btn" id="share-btn">📤 Partager</button>
-            <button class="new-recipe-btn" id="new-recipe-btn">← Nouvelle recette</button>
+            <button class="new-recipe-btn" id="new-recipe-btn" data-i18n="newRecipeBtn">← Nouvelle recette</button>
           </div>
         </div>
       </div>
@@ -196,7 +202,7 @@
 
     <section class="footer">
       <div class="container">
-        <p>Mistral Chef &mdash; un projet pour le <a href="https://mistral.ai" target="_blank" rel="noopener">hackathon Mistral AI</a></p>
+        <p data-i18n="footer">Mistral Chef &mdash; un projet pour le <a href="https://mistral.ai" target="_blank" rel="noopener">hackathon Mistral AI</a></p>
       </div>
     </section>
   </main>
