@@ -24,6 +24,7 @@ initTheme();
 const MISTRAL_API_URL = "https://api.mistral.ai/v1/chat/completions";
 const HISTORY_KEY = "mistral_chef_history";
 const HISTORY_MAX = 10;
+const FAVORITES_KEY = "mistral_chef_favorites";
 
 function escapeHtml(str) {
   const div = document.createElement("div");
@@ -34,6 +35,14 @@ function escapeHtml(str) {
 function getHistory() {
   try {
     return JSON.parse(localStorage.getItem(HISTORY_KEY)) || [];
+  } catch {
+    return [];
+  }
+}
+
+function getFavorites() {
+  try {
+    return JSON.parse(localStorage.getItem(FAVORITES_KEY)) || [];
   } catch {
     return [];
   }
@@ -55,6 +64,35 @@ function renderHistory() {
   historySection.style.display = "block";
   historyList.innerHTML = history
     .map((recipe, i) => `<li><button type="button" class="history-item" data-index="${i}">${escapeHtml(recipe.title)}</button></li>`)
+    .join("");
+}
+
+function isFavorite(recipe) {
+  return getFavorites().some((r) => r.title === recipe.title);
+}
+
+function toggleFavorite(recipe) {
+  const favorites = getFavorites();
+  const index = favorites.findIndex((r) => r.title === recipe.title);
+  if (index >= 0) {
+    favorites.splice(index, 1);
+  } else {
+    favorites.unshift(recipe);
+  }
+  localStorage.setItem(FAVORITES_KEY, JSON.stringify(favorites));
+  renderFavorites();
+  return index < 0;
+}
+
+function renderFavorites() {
+  const favorites = getFavorites();
+  if (favorites.length === 0) {
+    favoritesSection.style.display = "none";
+    return;
+  }
+  favoritesSection.style.display = "block";
+  favoritesList.innerHTML = favorites
+    .map((recipe, i) => `<li><button type="button" class="favorite-item" data-index="${i}">⭐ ${escapeHtml(recipe.title)}</button></li>`)
     .join("");
 }
 
@@ -91,6 +129,9 @@ let currentRecipe = null;
 const pdfBtn = document.getElementById("pdf-btn");
 const historySection = document.getElementById("history");
 const historyList = document.getElementById("history-list");
+const favoriteBtn = document.getElementById("favorite-btn");
+const favoritesSection = document.getElementById("favorites");
+const favoritesList = document.getElementById("favorites-list");
 const vibeInput = document.getElementById("vibe");
 const vibeBtns = document.querySelectorAll(".vibe-btn");
 
@@ -174,12 +215,21 @@ apiKeyForm.addEventListener("submit", async (e) => {
 
 toggleApiKeySection();
 renderHistory();
+renderFavorites();
 
 historyList.addEventListener("click", (e) => {
   const btn = e.target.closest(".history-item");
   if (!btn) return;
   const history = getHistory();
   const recipe = history[Number(btn.dataset.index)];
+  if (recipe) displayRecipe(recipe, { skipHistory: true });
+});
+
+favoritesList.addEventListener("click", (e) => {
+  const btn = e.target.closest(".favorite-item");
+  if (!btn) return;
+  const favorites = getFavorites();
+  const recipe = favorites[Number(btn.dataset.index)];
   if (recipe) displayRecipe(recipe, { skipHistory: true });
 });
 
@@ -203,6 +253,12 @@ copyRecipeBtn.addEventListener("click", async () => {
 
 pdfBtn.addEventListener("click", () => {
   window.print();
+});
+
+favoriteBtn.addEventListener("click", () => {
+  if (!currentRecipe) return;
+  toggleFavorite(currentRecipe);
+  updateFavoriteBtn(currentRecipe);
 });
 
 newRecipeBtn.addEventListener("click", () => {
@@ -358,10 +414,16 @@ function recipeToText(recipe) {
   return lines.join("\n");
 }
 
+function updateFavoriteBtn(recipe) {
+  const fav = isFavorite(recipe);
+  favoriteBtn.textContent = fav ? "★" : "☆";
+  favoriteBtn.classList.toggle("is-favorite", fav);
+}
+
 function displayRecipe(recipe, { skipHistory } = {}) {
   currentRecipe = recipe;
   if (!skipHistory) addToHistory(recipe);
-
+  updateFavoriteBtn(recipe);
   recipeTitle.textContent = recipe.title;
   metaPrep.textContent = `⏱️ Préparation : ${recipe.prep_time}`;
   metaCook.textContent = `🔥 Cuisson : ${recipe.cook_time}`;

@@ -126,6 +126,11 @@
           <h3 class="history-title">🕓 Recettes récentes</h3>
           <ul class="history-list" id="history-list"></ul>
         </div>
+
+        <div class="favorites" id="favorites" style="display: none;">
+          <h3 class="favorites-title">⭐ Recettes favorites</h3>
+          <ul class="favorites-list" id="favorites-list"></ul>
+        </div>
       </div>
     </section>
 
@@ -134,7 +139,10 @@
         <pre class="streaming-preview" id="streaming-preview" style="display: none;"></pre>
         <div class="recipe-card" id="recipe-card">
           <div class="recipe-header">
-            <span class="recipe-badge">✨ Création Mistral</span>
+            <div class="recipe-header-top">
+              <span class="recipe-badge">✨ Création Mistral</span>
+              <button type="button" class="favorite-btn" id="favorite-btn" title="Ajouter aux favoris">☆</button>
+            </div>
             <h2 id="recipe-title"></h2>
             <div class="recipe-meta" id="recipe-meta">
               <span class="meta-item" id="meta-prep">⏱️ Préparation : --</span>
