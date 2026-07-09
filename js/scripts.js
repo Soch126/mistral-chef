@@ -451,12 +451,26 @@ async function generateRecipe(ingredients, vibe, servings, diets, triggerBtn) {
   }
 }
 
+const SERVINGS_MIN = 1;
+const SERVINGS_MAX = 20;
+const SERVINGS_DEFAULT = 2;
+
+function clampServings(rawValue) {
+  const trimmed = String(rawValue).trim();
+  if (trimmed === "") return SERVINGS_DEFAULT;
+  const value = Math.round(Number(trimmed));
+  if (!Number.isFinite(value)) return SERVINGS_DEFAULT;
+  return Math.min(SERVINGS_MAX, Math.max(SERVINGS_MIN, value));
+}
+
 form.addEventListener("submit", async (e) => {
   e.preventDefault();
 
   const ingredients = document.getElementById("ingredients").value.trim();
   const vibe = vibeInput.value;
-  const servings = Number(document.getElementById("servings").value) || 2;
+  const servingsInput = document.getElementById("servings");
+  const servings = clampServings(servingsInput.value);
+  servingsInput.value = servings;
 
   if (!ingredients) return;
 
