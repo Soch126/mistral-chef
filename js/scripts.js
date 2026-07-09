@@ -274,6 +274,8 @@ const favoritesSection = document.getElementById("favorites");
 const favoritesList = document.getElementById("favorites-list");
 const variantBtn = document.getElementById("variant-btn");
 let lastParams = null;
+const cancelBtn = document.getElementById("cancel-btn");
+let currentAbortController = null;
 const shareBtn = document.getElementById("share-btn");
 const vibeInput = document.getElementById("vibe");
 const vibeBtns = document.querySelectorAll(".vibe-btn");
@@ -474,8 +476,12 @@ newRecipeBtn.addEventListener("click", () => {
 async function generateRecipe(ingredients, vibe, servings, diets, triggerBtn) {
   lastParams = { ingredients, vibe, servings, diets };
 
+  const controller = new AbortController();
+  currentAbortController = controller;
+
   triggerBtn.classList.add("is-loading");
   triggerBtn.disabled = true;
+  cancelBtn.style.display = "";
   recipeSection.classList.add("is-visible");
   recipeSection.setAttribute("aria-hidden", "false");
   recipeCard.style.display = "none";
@@ -484,18 +490,25 @@ async function generateRecipe(ingredients, vibe, servings, diets, triggerBtn) {
 
   try {
     const prompt = buildPrompt(ingredients, vibe, servings, diets, getLang());
-    const recipe = await callMistral(prompt);
+    const recipe = await callMistral(prompt, controller.signal);
     recipeCard.style.display = "";
     displayRecipe(recipe);
   } catch (err) {
-    recipeCard.style.display = "";
-    recipeCard.innerHTML = `<p class="error-message">❌ Erreur : ${escapeHtml(err.message || "Impossible de générer la recette. Réessaie.")}</p>`;
-    recipeSection.classList.add("is-visible");
-    recipeSection.setAttribute("aria-hidden", "false");
-    recipeCard.focus();
+    if (err.name === "AbortError") {
+      recipeSection.classList.remove("is-visible");
+      recipeSection.setAttribute("aria-hidden", "true");
+    } else {
+      recipeCard.style.display = "";
+      recipeCard.innerHTML = `<p class="error-message">❌ Erreur : ${escapeHtml(err.message || "Impossible de générer la recette. Réessaie.")}</p>`;
+      recipeSection.classList.add("is-visible");
+      recipeSection.setAttribute("aria-hidden", "false");
+      recipeCard.focus();
+    }
   } finally {
     triggerBtn.classList.remove("is-loading");
     triggerBtn.disabled = false;
+    cancelBtn.style.display = "none";
+    currentAbortController = null;
     stopLoadingMessages();
   }
 }
@@ -511,6 +524,10 @@ function clampServings(rawValue) {
   if (!Number.isFinite(value)) return SERVINGS_DEFAULT;
   return Math.min(SERVINGS_MAX, Math.max(SERVINGS_MIN, value));
 }
+
+cancelBtn.addEventListener("click", () => {
+  if (currentAbortController) currentAbortController.abort();
+});
 
 form.addEventListener("submit", async (e) => {
   e.preventDefault();
@@ -533,7 +550,7 @@ variantBtn.addEventListener("click", async () => {
 
 const streamingPreview = document.getElementById("streaming-preview");
 
-async function callMistral(prompt) {
+async function callMistral(prompt, signal) {
   const key = getApiKey();
   if (!CONFIG.useProxy && !key) {
     toggleApiKeySection();
@@ -546,6 +563,7 @@ async function callMistral(prompt) {
   const response = await fetch(CONFIG.useProxy ? CONFIG.proxyUrl : MISTRAL_API_URL, {
     method: "POST",
     headers,
+    signal,
     body: JSON.stringify({
       model: "mistral-small-latest",
       messages: [

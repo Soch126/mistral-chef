@@ -674,6 +674,26 @@ h1 span {
   word-break: break-word;
 }
 
+.cancel-btn {
+  display: block;
+  margin: 0 auto 16px;
+  border: 1px solid rgba(220, 90, 90, 0.3);
+  border-radius: 999px;
+  background: rgba(220, 90, 90, 0.06);
+  color: #dc5a5a;
+  font-family: var(--font-body);
+  font-size: 0.82rem;
+  font-weight: 600;
+  padding: 8px 18px;
+  cursor: pointer;
+  transition: all 200ms ease;
+}
+
+.cancel-btn:hover {
+  border-color: rgba(220, 90, 90, 0.6);
+  background: rgba(220, 90, 90, 0.12);
+}
+
 .recipe-card:focus {
   outline: 2px solid rgba(212, 168, 83, 0.5);
   outline-offset: 2px;
