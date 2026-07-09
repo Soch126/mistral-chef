@@ -70,6 +70,7 @@ newRecipeBtn.addEventListener("click", () => {
   recipeSection.classList.remove("is-visible");
   recipeSection.setAttribute("aria-hidden", "true");
   form.scrollIntoView({ behavior: "smooth" });
+  document.getElementById("ingredients").focus();
 });
 
 form.addEventListener("submit", async (e) => {
@@ -91,6 +92,7 @@ form.addEventListener("submit", async (e) => {
     recipeCard.innerHTML = `<p class="error-message">❌ Erreur : ${err.message || "Impossible de générer la recette. Réessaie."}</p>`;
     recipeSection.classList.add("is-visible");
     recipeSection.setAttribute("aria-hidden", "false");
+    recipeCard.focus();
   } finally {
     submitBtn.classList.remove("is-loading");
     submitBtn.disabled = false;
@@ -171,6 +173,7 @@ function displayRecipe(recipe) {
   recipeSection.classList.add("is-visible");
   recipeSection.setAttribute("aria-hidden", "false");
   recipeSection.scrollIntoView({ behavior: "smooth", block: "start" });
+  recipeCard.focus();
 }
 
 // Photo / Camera
