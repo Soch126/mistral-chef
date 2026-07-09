@@ -104,6 +104,32 @@ const CONFIG = {
   proxyUrl: "/api/mistral",
 };
 
+const LOADING_MESSAGES = [
+  "Le chef réfléchit...",
+  "Choix des épices...",
+  "Recherche d'inspiration...",
+  "Équilibrage des saveurs...",
+  "Dressage de l'assiette...",
+  "Dernières touches...",
+];
+
+const loadingMessageEl = document.getElementById("loading-message");
+let loadingMessageInterval = null;
+
+function startLoadingMessages() {
+  let i = 0;
+  loadingMessageEl.textContent = LOADING_MESSAGES[0];
+  loadingMessageInterval = setInterval(() => {
+    i = (i + 1) % LOADING_MESSAGES.length;
+    loadingMessageEl.textContent = LOADING_MESSAGES[i];
+  }, 2000);
+}
+
+function stopLoadingMessages() {
+  clearInterval(loadingMessageInterval);
+  loadingMessageEl.textContent = "";
+}
+
 const apiKeyInput = document.getElementById("api-key-input");
 const apiKeySection = document.getElementById("api-key-section");
 const apiKeyForm = document.getElementById("api-key-form");
@@ -319,6 +345,7 @@ async function generateRecipe(ingredients, vibe, servings, diets, triggerBtn) {
   recipeSection.setAttribute("aria-hidden", "false");
   recipeCard.style.display = "none";
   recipeSection.scrollIntoView({ behavior: "smooth", block: "start" });
+  startLoadingMessages();
 
   try {
     const prompt = buildPrompt(ingredients, vibe, servings, diets);
@@ -334,6 +361,7 @@ async function generateRecipe(ingredients, vibe, servings, diets, triggerBtn) {
   } finally {
     triggerBtn.classList.remove("is-loading");
     triggerBtn.disabled = false;
+    stopLoadingMessages();
   }
 }
 

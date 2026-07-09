@@ -572,6 +572,15 @@ h1 span {
   color: var(--gold-light);
 }
 
+.loading-message {
+  text-align: center;
+  margin-top: -8px;
+  font-size: 0.82rem;
+  color: rgba(196, 184, 168, 0.6);
+  font-style: italic;
+  min-height: 1.2em;
+}
+
 /* =========================
    Recipe Section
 ========================= */
