@@ -1,5 +1,11 @@
 const MISTRAL_API_URL = "https://api.mistral.ai/v1/chat/completions";
 
+function escapeHtml(str) {
+  const div = document.createElement("div");
+  div.textContent = String(str);
+  return div.innerHTML;
+}
+
 const apiKeyInput = document.getElementById("api-key-input");
 const apiKeySection = document.getElementById("api-key-section");
 const apiKeyForm = document.getElementById("api-key-form");
@@ -88,7 +94,7 @@ form.addEventListener("submit", async (e) => {
     const recipe = await callMistral(prompt);
     displayRecipe(recipe);
   } catch (err) {
-    recipeCard.innerHTML = `<p class="error-message">❌ Erreur : ${err.message || "Impossible de générer la recette. Réessaie."}</p>`;
+    recipeCard.innerHTML = `<p class="error-message">❌ Erreur : ${escapeHtml(err.message || "Impossible de générer la recette. Réessaie.")}</p>`;
     recipeSection.classList.add("is-visible");
     recipeSection.setAttribute("aria-hidden", "false");
   } finally {
@@ -159,11 +165,11 @@ function displayRecipe(recipe) {
   metaDifficulty.textContent = `📊 Difficulté : ${recipe.difficulty}`;
 
   ingredientsList.innerHTML = recipe.ingredients
-    .map((ing) => `<li>${ing}</li>`)
+    .map((ing) => `<li>${escapeHtml(ing)}</li>`)
     .join("");
 
   stepsList.innerHTML = recipe.steps
-    .map((step) => `<li>${step}</li>`)
+    .map((step) => `<li>${escapeHtml(step)}</li>`)
     .join("");
 
   recipeTip.textContent = recipe.tip;
