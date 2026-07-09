@@ -132,6 +132,8 @@ const historyList = document.getElementById("history-list");
 const favoriteBtn = document.getElementById("favorite-btn");
 const favoritesSection = document.getElementById("favorites");
 const favoritesList = document.getElementById("favorites-list");
+const variantBtn = document.getElementById("variant-btn");
+let lastParams = null;
 const vibeInput = document.getElementById("vibe");
 const vibeBtns = document.querySelectorAll(".vibe-btn");
 
@@ -283,24 +285,18 @@ newRecipeBtn.addEventListener("click", () => {
   form.scrollIntoView({ behavior: "smooth" });
 });
 
-form.addEventListener("submit", async (e) => {
-  e.preventDefault();
+async function generateRecipe(ingredients, vibe, servings, diets, triggerBtn) {
+  lastParams = { ingredients, vibe, servings, diets };
 
-  const ingredients = document.getElementById("ingredients").value.trim();
-  const vibe = vibeInput.value;
-  const servings = Number(document.getElementById("servings").value) || 2;
-
-  if (!ingredients) return;
-
-  submitBtn.classList.add("is-loading");
-  submitBtn.disabled = true;
+  triggerBtn.classList.add("is-loading");
+  triggerBtn.disabled = true;
   recipeSection.classList.add("is-visible");
   recipeSection.setAttribute("aria-hidden", "false");
   recipeCard.style.display = "none";
   recipeSection.scrollIntoView({ behavior: "smooth", block: "start" });
 
   try {
-    const prompt = buildPrompt(ingredients, vibe, servings, [...selectedDiets]);
+    const prompt = buildPrompt(ingredients, vibe, servings, diets);
     const recipe = await callMistral(prompt);
     recipeCard.style.display = "";
     displayRecipe(recipe);
@@ -310,9 +306,26 @@ form.addEventListener("submit", async (e) => {
     recipeSection.classList.add("is-visible");
     recipeSection.setAttribute("aria-hidden", "false");
   } finally {
-    submitBtn.classList.remove("is-loading");
-    submitBtn.disabled = false;
+    triggerBtn.classList.remove("is-loading");
+    triggerBtn.disabled = false;
   }
+}
+
+form.addEventListener("submit", async (e) => {
+  e.preventDefault();
+
+  const ingredients = document.getElementById("ingredients").value.trim();
+  const vibe = vibeInput.value;
+  const servings = Number(document.getElementById("servings").value) || 2;
+
+  if (!ingredients) return;
+
+  await generateRecipe(ingredients, vibe, servings, [...selectedDiets], submitBtn);
+});
+
+variantBtn.addEventListener("click", async () => {
+  if (!lastParams) return;
+  await generateRecipe(lastParams.ingredients, lastParams.vibe, lastParams.servings, lastParams.diets, variantBtn);
 });
 
 function buildPrompt(ingredients, vibe, servings, diets = []) {

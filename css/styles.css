@@ -858,7 +858,8 @@ h1 span {
 
 .new-recipe-btn,
 .copy-recipe-btn,
-.pdf-btn {
+.pdf-btn,
+.variant-btn {
   border: 0;
   background: transparent;
   color: var(--cream-muted);
@@ -868,12 +869,27 @@ h1 span {
   cursor: pointer;
   transition: color 200ms ease;
   padding: 8px 16px;
+  position: relative;
 }
 
 .new-recipe-btn:hover,
 .copy-recipe-btn:hover,
-.pdf-btn:hover {
+.pdf-btn:hover,
+.variant-btn:hover {
   color: var(--gold-light);
+}
+
+.variant-btn.is-loading .btn-text {
+  opacity: 0;
+}
+
+.variant-btn.is-loading .btn-loader {
+  display: block;
+  border-top-color: var(--gold);
+}
+
+.variant-btn .btn-loader {
+  border-color: rgba(196, 184, 168, 0.25);
 }
 
 /* =========================
